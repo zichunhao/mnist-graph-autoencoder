@@ -39,11 +39,11 @@ class Encoder(nn.Module):
                                 intensity=self.intensities, batch_norm=batch_norm)
             self.encode.append(graphNet)
 
-        graphNet_final = GraphNet(num_nodes=self.num_node, input_node_size=self.node_sizes[-1], output_node_size=self.output_node_size,
-                                  num_hidden_node_layers=nums_hidden_node_layers[-1], hidden_edge_size=hidden_edge_sizes[-1],
-                                  output_edge_size=output_edge_sizes[-1], num_mp=nums_mps[-1], dropout=dropout, alpha=alpha,
-                                  intensity=self.intensities[i], batch_norm=batch_norm)
-        self.encode.append(graphNet_final)
+        graphNet = GraphNet(num_nodes=self.num_node, input_node_size=self.node_sizes[-1], output_node_size=self.output_node_size,
+                            num_hidden_node_layers=nums_hidden_node_layers[-1], hidden_edge_size=hidden_edge_sizes[-1],
+                            output_edge_size=output_edge_sizes[-1], num_mp=nums_mps[-1], dropout=dropout, alpha=alpha,
+                            intensity=self.intensities[-1], batch_norm=batch_norm)
+        self.encode.append(graphNet)
 
     def forward(self, x):
         for i in range(self.num_layers):
