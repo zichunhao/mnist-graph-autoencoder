@@ -31,24 +31,24 @@ class Decoder(nn.Module):
 
         self.num_layers = len(node_sizes)
 
-        self.encode = nn.ModuleList()
+        self.decode = nn.ModuleList()
 
         graphNet = GraphNet(num_nodes=self.num_node, input_node_size=input_node_size, output_node_size=self.node_sizes[0],
                             num_hidden_node_layers=nums_hidden_node_layers[0], hidden_edge_size=hidden_edge_sizes[-1],
                             output_edge_size=output_edge_sizes[0], num_mp=nums_mps[0], dropout=dropout, alpha=alpha,
                             intensity=self.intensities[0], batch_norm=batch_norm)
-        self.encode.append(graphNet)
+        self.decode.append(graphNet)
 
         for i in range(1, self.num_layers):
             graphNet = GraphNet(num_nodes=self.num_node, input_node_size=self.node_sizes[i], output_node_size=self.node_sizes[i+1],
                                 num_hidden_node_layers=nums_hidden_node_layers[i], hidden_edge_size=hidden_edge_sizes[i],
                                 output_edge_size=output_edge_sizes[i], num_mp=nums_mps[i], dropout=dropout, alpha=alpha,
                                 intensity=self.intensities, batch_norm=batch_norm)
-            self.encode.append(graphNet)
+            self.decode.append(graphNet)
 
     def forward(self, x):
         for i in range(self.num_layers):
-            x = self.encode[i](x)
+            x = self.decode[i](x)
         return x
 
 def expand_var_list(lst, length):
