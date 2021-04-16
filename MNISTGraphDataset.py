@@ -31,9 +31,9 @@ class MNISTGraphDataset(Dataset):
         self.X = np.array(list(map(lambda x: np.array([xs, ys, x]).T, X_pre)))
 
         if not intensities:
-            self.X = np.array(list(map(lambda x: x[x[:, 2].argsort()][:, :2], self.X)))
+            self.X = np.array(list(map(lambda x: x[x[-num_pix:, 2].argsort()][:, :2], self.X)))
         else:
-            self.X = np.array(list(map(lambda x: x[x[:, 2].argsort()][:], self.X)))
+            self.X = np.array(list(map(lambda x: x[x[-num_pix:,].argsort()][:], self.X)))
 
         self.X = torch.FloatTensor(self.X)
 
