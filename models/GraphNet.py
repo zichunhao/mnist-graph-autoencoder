@@ -9,7 +9,7 @@ class GraphNet(nn.Module):
     Parameters
     ----------
     num_nodes: int
-        The number of nodes for the graph
+        The number of nodes for the graph.
     input_node_size: int
         The dimension of input node feature vectors.
     output_node_size: int
