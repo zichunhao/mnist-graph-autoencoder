@@ -181,7 +181,7 @@ class GraphNet(nn.Module):
                         ...
                         [x2, y2, I1, 0, 0, x1, y1, I1, 0, 0, d21, I21],
                         ...
-                        [xn, yn, In, 0, 0, xn, yn, In,0, 0,  dnn, Imn]],
+                        [xn, yn, In, 0, 0, xn, yn, In,0, 0,  dnn, Inn]],
         where the relative intensity is defined by I_{ij} = 1 - (I_j - I_i).
         If self.intensity is False, the adjacency for a specific batch has a format
                         [x1, y1, I1, 0, 0, x2, y2, I2, 0, 0],
