@@ -166,28 +166,33 @@ class GraphNet(nn.Module):
                         [x2, y2, I2],
                         ...
                         [xn, yn, In]]
+        and output_node_size = 5, so the padded data is
+        x[batch_idx] = [[x1, y1, I1, 0, 0],
+                        [x2, y2, I2, 0, 0],
+                        ...
+                        [xn, yn, In, 0, 0]].
         If self.intensity is True, the adjacency for a specific batch has a format
-        A[batch_idx] = [[x1, y1, I1, x1, y1, I1, d11, I11],
-                        [x1, y1, I1, x2, y2, I2, d12, I12],
+        A[batch_idx] = [[x1, y1, I1, 0, 0, x1, y1, I1, 0, 0, d11, I11],
+                        [x1, y1, I1, 0, 0, x2, y2, I2, 0, 0, d12, I12],
                         ...
-                        [x1, y1, In, xn, yn, In, d1n, I1n],
-                        [x1, y1, I1, x1, y1, I1, d11, I11],
-                        [x1, y1, I1, x2, y2, I2, d12, I12],
+                        [x1, y1, In, 0, 0, xn, yn, In, 0, 0, d1n, I1n],
+                        [x1, y1, I1, 0, 0, x1, y1, I1, 0, 0, d11, I11],
+                        [x1, y1, I1, 0, 0, x2, y2, I2, 0, 0, d12, I12],
                         ...
-                        [x2, y2, I1, x1, y1, I1, d21, I21],
+                        [x2, y2, I1, 0, 0, x1, y1, I1, 0, 0, d21, I21],
                         ...
-                        [xn, yn, In, xn, yn, In, dnn, Imn]],
+                        [xn, yn, In, 0, 0, xn, yn, In,0, 0,  dnn, Imn]],
         where the relative intensity is defined by I_{ij} = 1 - (I_j - I_i).
         If self.intensity is False, the adjacency for a specific batch has a format
-                        [x1, y1, I1, x2, y2, I2],
+                        [x1, y1, I1, 0, 0, x2, y2, I2, 0, 0],
                         ...
-                        [x1, y1, In, xn, yn, In],
-                        [x1, y1, I1, x1, y1, I1],
-                        [x1, y1, I1, x2, y2, I2],
+                        [x1, y1, In, 0, 0, xn, yn, In, 0, 0],
+                        [x1, y1, I1, 0, 0, x1, y1, I1, 0, 0],
+                        [x1, y1, I1, 0, 0, x2, y2, I2, 0, 0],
                         ...
-                        [x2, y2, I1, x1, y1, I1],
+                        [x2, y2, I1, 0, 0, x1, y1, I1, 0, 0],
                         ...
-                        [xn, yn, In, xn, yn, In]].
+                        [xn, yn, In, 0, 0, xn, yn, In, 0, 0]].
     """
     def getA(self, x, batch_size):
         x1 = x.repeat(1, 1, self.num_nodes).view(batch_size, self.num_nodes * self.num_nodes, self.hidden_node_size)
