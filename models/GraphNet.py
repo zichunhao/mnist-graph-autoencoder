@@ -117,7 +117,7 @@ class GraphNet(nn.Module):
 
         for i in range(self.num_mp):
             # Edge features
-            A = self.get_edge_features(x, batch_size)
+            A = self.getA(x, batch_size)
 
             # Edge layer 1
             A = F.leaky_relu(self.edge_net_1[i](A), negative_slope=self.alpha)
@@ -160,15 +160,42 @@ class GraphNet(nn.Module):
     Return
     ------
     A: torch.Tensor with shape (batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
-        The edge features.
+        The adjacency matrix.
+        As an example, for a specific batch,
+        x[batch_idx] = [[x1, y1, I1],
+                        [x2, y2, I2],
+                        ...
+                        [xn, yn, In]]
+        If self.intensity is True, the adjacency for a specific batch has a format
+        A[batch_idx] = [[x1, y1, I1, x1, y1, I1, d11, I11],
+                        [x1, y1, I1, x2, y2, I2, d12, I12],
+                        ...
+                        [x1, y1, In, xn, yn, In, d1n, I1n],
+                        [x1, y1, I1, x1, y1, I1, d11, I11],
+                        [x1, y1, I1, x2, y2, I2, d12, I12],
+                        ...
+                        [x2, y2, I1, x1, y1, I1, d21, I21],
+                        ...
+                        [xn, yn, In, xn, yn, In, dnn, Imn]],
+        where the relative intensity is defined by I_{ij} = 1 - (I_j - I_i).
+        If self.intensity is False, the adjacency for a specific batch has a format
+                        [x1, y1, I1, x2, y2, I2],
+                        ...
+                        [x1, y1, In, xn, yn, In],
+                        [x1, y1, I1, x1, y1, I1],
+                        [x1, y1, I1, x2, y2, I2],
+                        ...
+                        [x2, y2, I1, x1, y1, I1],
+                        ...
+                        [xn, yn, In, xn, yn, In]].
     """
-    def get_edge_features(self, x, batch_size):
+    def getA(self, x, batch_size):
         x1 = x.repeat(1, 1, self.num_nodes).view(batch_size, self.num_nodes * self.num_nodes, self.hidden_node_size)
         x2 = x.repeat(1, self.num_nodes, 1) # 1*(self.num_nodes)*1 tensor with repeated x along axis=1
 
         if self.intensity:
             dists = torch.norm(x2[:, :, :-1] - x1[:, :, :-1] + 1e-12, dim=2).unsqueeze(2)
-            int_diffs = 1 - ((x2[:, :, -1] - x1[:, :, -1])).unsqueeze(2)
+            int_diffs = 1 - ((x2[:, :, -1] - x1[:, :, -1])).unsqueeze(2)  # Iij = 1 - (Ij - Ii)
             A = (torch.cat((x1, x2, dists, int_diffs), 2)).view(batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
         else:
             A = torch.cat((x1, x2), 2).view(batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
