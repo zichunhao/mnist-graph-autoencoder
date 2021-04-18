@@ -60,27 +60,27 @@ class GraphNet(nn.Module):
         self.alpha = alpha  # For leaky relu layer for edge features
         self.dropout = nn.Dropout(p=dropout)  # Dropout layer for edge features
 
-        # Edge networks
-        self.edge_net_1 = nn.ModuleList()
-        self.edge_net_2 = nn.ModuleList()
+        # AGGREGATE function
+        self.aggregate_hidden = nn.ModuleList()
+        self.aggregate = nn.ModuleList()
 
-        # Nodes networks
-        self.node_net_1 = nn.ModuleList()
-        self.node_net_2 = nn.ModuleList()
+        # UPDATE function
+        self.update_hidden = nn.ModuleList()
+        self.update = nn.ModuleList()
 
         # Batch normalization layers
-        self.bn_edge_1 = nn.ModuleList()
-        self.bn_edge_2 = nn.ModuleList()
+        self.bn_edge_hidden = nn.ModuleList()
+        self.bn_edge = nn.ModuleList()
         self.bn_node = nn.ModuleList()
 
         for i in range(self.num_mp):
             # Edge feature layers
-            self.edge_net_1.append(nn.Linear(self.input_edge_size, self.hidden_edge_size))
-            self.edge_net_2.append(nn.Linear(self.hidden_edge_size, self.output_edge_size))
+            self.aggregate_hidden.append(nn.Linear(self.input_edge_size, self.hidden_edge_size))
+            self.aggregate.append(nn.Linear(self.hidden_edge_size, self.output_edge_size))
 
             if batch_norm:
-                self.bn_edge_1.append(nn.BatchNorm1d(self.hidden_edge_size))
-                self.bn_edge_2.append(nn.BatchNorm1d(self.output_edge_size))
+                self.bn_edge_hidden.append(nn.BatchNorm1d(self.hidden_edge_size))
+                self.bn_edge.append(nn.BatchNorm1d(self.output_edge_size))
 
             # Node feature layers
             node_layers = nn.ModuleList()
@@ -89,8 +89,8 @@ class GraphNet(nn.Module):
             for j in range(self.num_hidden_node_layers - 1):
                 node_layers.append(nn.Linear(self.hidden_node_size, self.hidden_node_size))
 
-            self.node_net_1.append(node_layers)  # Layer for message Aggregation of hidden layer
-            self.node_net_2.append(nn.Linear(self.hidden_node_size, self.hidden_node_size))  # Layer for message Aggregation
+            self.update_hidden.append(node_layers)  # Layer for message Aggregation of hidden layer
+            self.update.append(nn.Linear(self.hidden_node_size, self.hidden_node_size))  # Layer for message Aggregation
 
             if batch_norm:
                 bn_node_i = nn.ModuleList()
@@ -120,15 +120,15 @@ class GraphNet(nn.Module):
             A = self.getA(x, batch_size)
 
             # Edge layer 1
-            A = F.leaky_relu(self.edge_net_1[i](A), negative_slope=self.alpha)
+            A = F.leaky_relu(self.aggregate_hidden[i](A), negative_slope=self.alpha)
             if self.batch_norm:
-                A = self.bn_edge_1[i](A)
+                A = self.bn_edge_hidden[i](A)
             A = self.dropout(A)
 
             # Edge layer 2
-            A = F.leaky_relu(self.edge_net_2[i](A), negative_slope=self.alpha)
+            A = F.leaky_relu(self.aggregate[i](A), negative_slope=self.alpha)
             if self.batch_norm:
-                A = self.bn_edge_2[i](A)
+                A = self.bn_edge[i](A)
             A = self.dropout(A)
 
             # Concatenation
@@ -139,12 +139,12 @@ class GraphNet(nn.Module):
 
             # Aggregation
             for j in range(self.num_hidden_node_layers):
-                x = F.leaky_relu(self.node_net_1[i][j](x), negative_slope=self.alpha)
+                x = F.leaky_relu(self.update_hidden[i][j](x), negative_slope=self.alpha)
                 if self.batch_norm:
                     x = self.bn_node[i][j](x)
                 x = self.dropout(x)
 
-            x = self.dropout(torch.tanh(self.node_net_2[i](x)))
+            x = self.dropout(torch.tanh(self.update[i](x)))
             x = x.view(batch_size, self.num_nodes, self.hidden_node_size)
 
         return x
