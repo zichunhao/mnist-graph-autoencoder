@@ -160,7 +160,7 @@ class GraphNet(nn.Module):
     Return
     ------
     A: torch.Tensor with shape (batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
-        The adjacency matrix.
+        The adjacency matrix that stores the message m = MESSAGE(hv, hw).
         As an example, for a specific batch,
         x[batch_idx] = [[x1, y1, I1],
                         [x2, y2, I2],
