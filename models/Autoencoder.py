@@ -83,4 +83,5 @@ class Autoencoder(nn.Module):
         latent_vec = torch.sum(x, dim=-2).unsqueeze(dim=0)  # Latent vector
         x = self.linear(latent_vec).view(batch_size, self.num_nodes, self.latent_size)
         x = self.decoder(x)
+        x = torch.tanh(x)
         return latent_vec, x
