@@ -3,8 +3,8 @@ import numpy as np
 from torch.utils.data import Dataset
 
 class MNISTGraphDataset(Dataset):
-    def __init__(self, dataset_path, num_pix, train=True, intensities=True, num=-1):
-        if train:
+    def __init__(self, dataset_path, num_pts, train=True, intensities=True, img_dim=28, num=-1):
+        if(train):
             dataset = np.loadtxt(dataset_path + 'mnist_train.csv', delimiter=',', dtype=np.float32)
         else:
             dataset = np.loadtxt(dataset_path + 'mnist_test.csv', delimiter=',', dtype=np.float32)
@@ -17,11 +17,11 @@ class MNISTGraphDataset(Dataset):
         elif num > -1:
             dataset = dataset[dataset[:, 0] == num]
 
-        print(dataset.shape)
+        print(f"shape={dataset.shape}")
 
-        X_pre = (dataset[:, 1:] - 127.5) / 255.0
+        X_pre = (dataset[:, 1:] - 127.5) / 255.0  # Intensity normalizations (dataset[:, 0] are labels)
 
-        imrange = np.linspace(-0.5, 0.5, num=num_pix, endpoint=False)
+        imrange = np.linspace(-0.5, 0.5, num=img_dim, endpoint=False)
 
         xs, ys = np.meshgrid(imrange, imrange)
 
@@ -31,9 +31,9 @@ class MNISTGraphDataset(Dataset):
         self.X = np.array(list(map(lambda x: np.array([xs, ys, x]).T, X_pre)))
 
         if not intensities:
-            self.X = np.array(list(map(lambda x: x[x[-num_pix:, 2].argsort()][:, :2], self.X)))
+            self.X = np.array(list(map(lambda x: x[x[:, 2].argsort()][-num_pts:, :2], self.X)))
         else:
-            self.X = np.array(list(map(lambda x: x[x[-num_pix:,].argsort()][:], self.X)))
+            self.X = np.array(list(map(lambda x: x[x[:, 2].argsort()][-num_pts:], self.X)))
 
         self.X = torch.FloatTensor(self.X)
 
@@ -49,7 +49,9 @@ class MNISTGraphDataset(Dataset):
             y.append(one_hot)
         self.Y = torch.tensor(y).to(torch.float32)
 
+
         print(self.X.shape)
+        # print(self.X[0])
         print("Data Processed")
 
     def __len__(self):
