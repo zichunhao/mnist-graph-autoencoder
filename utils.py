@@ -17,7 +17,7 @@ def generate_img_arr(coords, img_dim=28):
     for pts in coords:
         x,y,I = pts
         x,y = int(x),int(y)
-        img_arr[y,x] = I
+        img_arr[y,x] = I  # row = y, col = x
     return img_arr
 
 '''
