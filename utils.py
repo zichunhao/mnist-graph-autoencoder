@@ -44,7 +44,7 @@ def generate_id():
     return uuid.uuid4().hex
 
 '''
-Save generated images
+Save generated images.
 '''
 def save_gen_imgs(args, gen_imgs, labels, epoch, is_train):
     for i in range(len(gen_imgs)):
