@@ -1,7 +1,7 @@
 import torch.nn as nn
 import time
 
-from utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data
+from utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data, plot_eval_results
 
 def train(args, model, loader, epoch, optimizer, is_train):
     epoch_total_loss = 0
@@ -44,7 +44,7 @@ def train(args, model, loader, epoch, optimizer, is_train):
 
     return epoch_avg_loss, gen_imgs
 
-def train_loop(args, model, train_loader, valid_loader, optimizer, load_to_train):
+def train_loop(args, model, train_loader, valid_loader, optimizer):
     assert (args.save_dir is not None), "Please specify save directory!"
     make_dir(args.save_dir)
 
@@ -53,7 +53,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, load_to_train
     valid_avg_losses = []
     valid_dts = []
 
-    for ep in args.num_epochs:
+    for ep in range(args.num_epochs):
         if args.load_to_train:
             epoch = args.load_epoch + ep + 1
         else:
@@ -61,7 +61,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, load_to_train
 
         # Training
         start = time.time()
-        train_avg_loss, _ = train(model, train_loader, epoch, optimizer, is_train=True)
+        train_avg_loss, _ = train(args, model, train_loader, epoch, optimizer, is_train=True)
         train_dt = time.time() - start
 
         train_avg_losses.append(train_avg_loss)
@@ -72,7 +72,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, load_to_train
 
         # Validation
         start = time.time()
-        valid_avg_loss, _ = train(model, valid_loader, epoch, optimizer, is_train=False)
+        valid_avg_loss, _ = train(args, model, valid_loader, epoch, optimizer, is_train=False)
         valid_dt = time.time() - start
 
         valid_avg_losses.append(train_avg_loss)
@@ -91,3 +91,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, load_to_train
     save_data(args, data=valid_dts, data_name="dts", epoch="global", is_train=False, global_data=True)
 
     return train_avg_losses, valid_avg_losses, train_dts, valid_dts
+
+    plot_eval_results(args, data=(train_avg_losses, valid_avg_losses), data_name="Losses")
+    plot_eval_results(args, data=(train_dts, valid_dts), data_name="Time durations")
+    plot_eval_results(args, data=[train_dts[i] + valid_dts[i]], data_name="Total time durations per epoch")
