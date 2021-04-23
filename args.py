@@ -36,7 +36,7 @@ def setup_argparse():
     # Training options and hyperparameters
     parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                         help='Batch size.')
-    parser.add_argument('--num-epochs', type=int, default=32, metavar='N',
+    parser.add_argument('--num-epochs', type=int, default=64, metavar='N',
                         help='Number of epochs for training.')
     parser.add_argument('--lr', type=float, default=1e-3, metavar='N',
                         help='Learning rate.')
