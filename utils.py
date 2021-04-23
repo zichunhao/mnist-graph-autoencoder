@@ -126,4 +126,4 @@ def plot_eval_results(args, data, data_name, outpath):
 Generate folder name
 '''
 def gen_fname(args):
-    return f"MnistAutoencoder_lr_{args.lr}_numEpochs_{args.num_epochs}_batchSize_{args.batch_size}"
+    return f"MnistAutoencoder_lr_{args.lr}_numEpochs_{args.num_epochs}_batchSize_{args.batch_size}_latentNodeSize_{args.latent_node_size}"
