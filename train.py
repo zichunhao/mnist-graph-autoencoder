@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import time
 
@@ -63,6 +64,9 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath):
         start = time.time()
         train_avg_loss, _ = train(args, model, train_loader, epoch, optimizer, outpath, is_train=True)
         train_dt = time.time() - start
+
+        make_dir(f'{outpath}/weights')
+        torch.save(model.state_dict(), f"{outpath}/weights/epoch_{epoch+1}_weights.pth")
 
         train_avg_losses.append(train_avg_loss)
         train_dts.append(train_dt)
