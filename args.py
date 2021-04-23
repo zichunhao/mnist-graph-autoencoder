@@ -51,6 +51,9 @@ def setup_argparse():
     parser.add_argument('--load-epoch', type=int, default=None, metavar='N',
                         help='Epoch number of the trained model to load.')
 
+    parser.add_argument('--print-logging', type=strToBool, default=True, metavar='N',
+                        help='Whether to print logging infos.')
+
     args = parser.parse_args()
 
     return args
