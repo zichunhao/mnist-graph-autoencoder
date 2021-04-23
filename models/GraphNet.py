@@ -20,7 +20,7 @@ class GraphNet(nn.Module):
         The dimension of hidden edges before message passing.
     output_edge_size: int
         The dimenson of output edges for message passing.
-    num_mp: int
+    num_mps: int
         The number of message passing step.
     dropout: float
         The dropout value for edge features.
@@ -34,7 +34,7 @@ class GraphNet(nn.Module):
     """
 
     def __init__(self, num_nodes, input_node_size, output_node_size, num_hidden_node_layers,
-                 hidden_edge_size, output_edge_size, num_mp, dropout, alpha, intensity, batch_norm=True):
+                 hidden_edge_size, output_edge_size, num_mps, dropout, alpha, intensity, batch_norm=True):
         super(GraphNet, self).__init__()
 
         # Nodes
@@ -54,7 +54,7 @@ class GraphNet(nn.Module):
             self.input_edge_size += 2  # Extra edge for relative positions and intensitities
             # assert self.hidden_node_size > 1, f"hidden_node_size is set to {self.hidden_node_size} <= 1: A feature cannot be both position and intensity!"
 
-        self.num_mp = num_mp  # Number of message passing
+        self.num_mps = num_mps  # Number of message passing
         self.batch_norm = batch_norm  # Use batch normalization (bool)
 
         self.alpha = alpha  # For leaky relu layer for edge features
@@ -73,7 +73,7 @@ class GraphNet(nn.Module):
         self.bn_edge = nn.ModuleList()
         self.bn_node = nn.ModuleList()
 
-        for i in range(self.num_mp):
+        for i in range(self.num_mps):
             # Edge feature layers
             self.aggregate_hidden.append(nn.Linear(self.input_edge_size, self.hidden_edge_size))
             self.aggregate.append(nn.Linear(self.hidden_edge_size, self.output_edge_size))
@@ -115,7 +115,7 @@ class GraphNet(nn.Module):
 
         x = F.pad(x, (0, self.hidden_node_size - self.input_node_size, 0, 0, 0, 0))
 
-        for i in range(self.num_mp):
+        for i in range(self.num_mps):
             # Edge features
             A = self.getA(x, batch_size)
 

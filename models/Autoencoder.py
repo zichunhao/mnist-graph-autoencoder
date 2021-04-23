@@ -16,7 +16,7 @@ class Autoencoder(nn.Module):
         The number of nodes for the graph.
     node_size: int
         The dimension of input node feature vectors.
-    latent_size: int
+    latent_node_size: int
         The dimension of node feature in the latent space.
     num_hidden_node_layers: int
         The number of layers of hidden nodes.
@@ -24,7 +24,7 @@ class Autoencoder(nn.Module):
         The dimension of hidden edges before message passing.
     output_edge_size: int
         The dimenson of output edges for message passing.
-    num_mp: int
+    num_mps: int
         The number of message passing step.
     dropout: float
         The dropout value for edge features.
@@ -36,27 +36,27 @@ class Autoencoder(nn.Module):
     batch_norm: bool (default: True)
         Whether to use batch normalization.
     """
-    def __init__(self, num_nodes, node_size, latent_size, num_hidden_node_layers, hidden_edge_size, output_edge_size,
-                 num_mp, dropout, alpha, intensity, batch_norm=True):
+    def __init__(self, num_nodes, node_size, latent_node_size, num_hidden_node_layers, hidden_edge_size, output_edge_size,
+                 num_mps, dropout, alpha, intensity, batch_norm=True):
         super(Autoencoder, self).__init__()
 
         self.num_nodes = num_nodes
         self.node_size = node_size
         self.num_latent_node = 1  # We are summing over all node features, resulting in one node feature
-        self.latent_size = latent_size
-        self.num_mp = num_mp
+        self.latent_node_size = latent_node_size
+        self.num_mps = num_mps
         self.intensity = intensity
 
-        self.encoder = GraphNet(num_nodes=self.num_nodes, input_node_size=node_size, output_node_size=self.latent_size,
+        self.encoder = GraphNet(num_nodes=self.num_nodes, input_node_size=node_size, output_node_size=self.latent_node_size,
                                 num_hidden_node_layers=num_hidden_node_layers, hidden_edge_size=hidden_edge_size,
-                                output_edge_size=output_edge_size, num_mp=num_mp, dropout=dropout, alpha=alpha,
+                                output_edge_size=output_edge_size, num_mps=num_mps, dropout=dropout, alpha=alpha,
                                 intensity=self.intensity, batch_norm=batch_norm)
 
-        self.linear = nn.Linear(self.latent_size, self.num_nodes*self.latent_size)
+        self.linear = nn.Linear(self.latent_node_size, self.num_nodes*self.latent_node_size)
 
-        self.decoder = GraphNet(num_nodes=self.num_nodes, input_node_size=self.latent_size, output_node_size=self.node_size,
+        self.decoder = GraphNet(num_nodes=self.num_nodes, input_node_size=self.latent_node_size, output_node_size=self.node_size,
                                 num_hidden_node_layers=num_hidden_node_layers, hidden_edge_size=hidden_edge_size,
-                                output_edge_size=output_edge_size, num_mp=num_mp, dropout=dropout, alpha=alpha,
+                                output_edge_size=output_edge_size, num_mps=num_mps, dropout=dropout, alpha=alpha,
                                 intensity=self.intensity, batch_norm=batch_norm)
 
     """
@@ -81,7 +81,7 @@ class Autoencoder(nn.Module):
         batch_size = x.shape[0]
         x = self.encoder(x)
         latent_vec = torch.sum(x, dim=-2).unsqueeze(dim=0)  # Latent vector
-        x = self.linear(latent_vec).view(batch_size, self.num_nodes, self.latent_size)
+        x = self.linear(latent_vec).view(batch_size, self.num_nodes, self.latent_node_size)
         x = self.decoder(x)
         x = torch.tanh(x)
         return latent_vec, x

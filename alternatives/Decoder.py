@@ -30,7 +30,7 @@ class Decoder(nn.Module):
         for i in range(self.num_layers-1):
             graphNet = GraphNet(num_nodes=self.nums_nodes[i], input_node_size=self.node_sizes[i], output_node_size=self.node_sizes[i+1],
                                 num_hidden_node_layers=nums_hidden_node_layers[i], hidden_edge_size=hidden_edge_sizes[i],
-                                output_edge_size=output_edge_sizes[i], num_mp=nums_mps[i], dropout=dropout, alpha=alpha,
+                                output_edge_size=output_edge_sizes[i], num_mps=nums_mps[i], dropout=dropout, alpha=alpha,
                                 intensity=self.intensities[i], batch_norm=batch_norm)
             self.decode.append(graphNet)
 
