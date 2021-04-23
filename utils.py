@@ -4,7 +4,7 @@ import os
 import uuid
 
 '''
-Convert an array of coordinates [xi, yi, Ii] to a 2-D image array.
+Convert an array of coordinates [[xi, yi, Ii]] to a 2-D image array.
 '''
 def generate_img_arr(coords, img_dim=28):
     coords = coords.detach().numpy()
