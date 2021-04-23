@@ -33,12 +33,14 @@ def setup_argparse():
     parser.add_argument('--batch-norm', type=strToBool, default=True, metavar='N',
                         help='Whether to include batch normalizations in the graph. Default: True.')
 
-    # Training options
+    # Training options and hyperparameters
     parser.add_argument('--batch-size', type=int, default=32, metavar='N',
                         help='Batch size.')
     parser.add_argument('--num-epochs', type=int, default=32, metavar='N',
                         help='Number of epochs for training.')
-    parser.add_argument('--save-dir', type=str, default='./trained_models', metavar='N',
+    parser.add_argument('--lr', type=float, default=1e-3, metavar='N',
+                        help='Learning rate.')
+    parser.add_argument('--save-dir', type=str, default='trained_models', metavar='N',
                         help='The directory to save trained models and figures.')
     parser.add_argument('--save-figs', type=strToBool, default=True, metavar='N',
                         help='Whether to save generated figures.')
