@@ -81,6 +81,9 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, load_to_train
         save_data(args, data=valid_avg_loss, data_name="loss", epoch=epoch, is_train=False)
         save_data(args, data=valid_dt, data_name="dt", epoch=epoch, is_train=False)
 
+        print(f'epoch={epoch+1}/{args.num_epochs if not args.load_to_train else args.num_epochs+args.load_epoch} '
+            + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
+
     # Save global data
     save_data(args, data=train_avg_losses, data_name="losses", epoch="global", is_train=True, global_data=True)
     save_data(args, data=train_dts, data_name="dts", epoch="global", is_train=True, global_data=True)
