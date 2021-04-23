@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import os
 import uuid
 
+from torch.utils.data import DataLoader
+from MNISTGraphDataset import MNISTGraphDataset
+
 '''
 Convert an array of coordinates [[xi, yi, Ii]] to a 2-D image array.
 '''
@@ -58,18 +61,29 @@ def save_gen_imgs(args, gen_imgs, labels, epoch, is_train):
 '''
 Save data like losses and dts.
 '''
-def save_data(args, data, data_name, epoch, is_train, global_data=False)
+def save_data(args, data, data_name, epoch, is_train, global_data=False):
     if not global_data:
         if is_train:
-            with open(f'{args.outpath}/model_evaluations/train_{data_name}_epoch_{epoch}.pkl', 'wb):
+            with open(f'{args.outpath}/model_evaluations/train_{data_name}_epoch_{epoch}.pkl', 'wb'):
                 pickle.dump(data, f)
         else:
-            with open(f'{args.outpath}/model_evaluations/valid_{data_name}_epoch_{epoch}.pkl', 'wb):
+            with open(f'{args.outpath}/model_evaluations/valid_{data_name}_epoch_{epoch}.pkl', 'wb'):
                 pickle.dump(data, f)
     else:
         if is_train:
-            with open(f'{args.outpath}/model_evaluations/train_{data_name}.pkl', 'wb):
+            with open(f'{args.outpath}/model_evaluations/train_{data_name}.pkl', 'wb'):
                 pickle.dump(data, f)
         else:
-            with open(f'{args.outpath}/model_evaluations/valid_{data_name}.pkl', 'wb):
+            with open(f'{args.outpath}/model_evaluations/valid_{data_name}.pkl', 'wb'):
                 pickle.dump(data, f)
+'''
+Data initialization.
+'''
+def initialize_data(args):
+    data_train = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=True)
+    data_test = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=False)
+
+    train_loader = DataLoader(data_train, batch_size=args.batch_size, shuffle=True)
+    test_loader = DataLoader(data_test, batch_size=args.batch_size, shuffle=False)
+
+    return train_loader, test_loader
