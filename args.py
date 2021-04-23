@@ -28,9 +28,9 @@ def setup_argparse():
                         help='Dropout value for edge features.')
     parser.add_argument('--alpha', type=int, default=0.3, metavar='N',
                         help='Alpha value for the leaky relu layer in edge network.')
-    parser.add_argument('--intensity', type=bool, default=True, metavar='N',
+    parser.add_argument('--intensity', type=strToBool, default=True, metavar='N',
                         help='Whether the last elements in output vectors are intensities. Default: True.')
-    parser.add_argument('--batch-norm', type=bool, default=True, metavar='N',
+    parser.add_argument('--batch-norm', type=strToBool, default=True, metavar='N',
                         help='Whether to include batch normalizations in the graph. Default: True.')
 
     # Training options
@@ -38,7 +38,28 @@ def setup_argparse():
                         help='Batch size.')
     parser.add_argument('--num-epochs', type=int, default=32, metavar='N',
                         help='Number of epochs for training.')
+    parser.add_argument('--save-figs', type=strToBool, default=True, metavar='N',
+                        help='Whether to save generated figures.')
+    parser.add_argument('--save-all-figs', type=strToBool, default=True, metavar='N',
+                        help='Whether to save figures generated in ALL epochs.')
+    parser.add_argument('--load-to-train', type=strToBool, default=False, metavar='N',
+                        help='Whether to load existing (trained) model for training.')
+    parser.add_argument('--load-model-path', type=str, default=None, metavar='N',
+                        help='Path of the trained model to load.')
+    parser.add_argument('--load-epoch', type=int, default=None, metavar='N',
+                        help='Epoch number of the trained model to load.')
 
     args = parser.parse_args()
 
     return args
+
+# From https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+def strToBool(arg):
+    if isinstance(arg, bool):
+       return arg
+    if arg.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif arg.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
