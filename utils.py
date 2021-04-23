@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import uuid
 
-def generate_img_array(coords, img_dim=28):
+def generate_img_arr(coords, img_dim=28):
     coords = coords.detach().numpy()
     coords = np.array(coords, copy=True)
     # Denormalization
@@ -16,17 +17,16 @@ def generate_img_array(coords, img_dim=28):
         img_arr[y,x] = I
     return img_arr
 
-def save_img(img_arr, label="unknown", epoch=None, save_dir="./generated_imgs"):
-    fig, ax = plt.subplots()
-    ax.imshow(img_arr, cmap='gray')
-    if epoch is None:
-        PATH = f"{save_dir}"
-    else:
-        PATH = f"{save_dir}/epoch_{epoch}"
-    make_path(PATH)
-    plt.savefig(f"{PATH}/{label}.png", dpi=900)
+def save_img(img_arr, label, epoch, save_dir="./generated_imgs"):
+    make_dir(save_dir)
+    
+    plt.imshow(img_arr, cmap='gray')
+    plt.savefig(f"{save_dir}/{label}_{generate_rand()}.png", dpi=900)
     plt.close()
 
-def make_path(path):
+def make_dir(path):
     if not os.path.isdir(path):
         os.makedirs(path)
+
+def generate_id():
+    return uuid.uuid4().hex
