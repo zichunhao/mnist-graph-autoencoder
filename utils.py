@@ -27,11 +27,11 @@ def generate_img_arr(coords, img_dim=28):
 '''
 Save generated image from an array in terms of coordinates.
 '''
-def save_img(img_arr, label, epoch, save_dir):
-    make_dir(save_dir)
+def save_img(img_arr, label, epoch, outpath):
+    make_dir(outpath)
 
     plt.imshow(img_arr, cmap='gray')
-    plt.savefig(f"{save_dir}/{label}_{generate_id()}.png", dpi=600)
+    plt.savefig(f"{outpath}/epoch_{epoch}_num_{label}_{generate_id()}.png", dpi=600)
     plt.close()
 
 '''
@@ -50,32 +50,35 @@ def generate_id():
 '''
 Save generated images.
 '''
-def save_gen_imgs(args, gen_imgs, labels, epoch, is_train):
+def save_gen_imgs(args, gen_imgs, labels, epoch, is_train, outpath):
+    make_dir(f"{outpath}/generated_images/train")
+    make_dir(f"{outpath}/generated_images/valid")
     for i in range(len(gen_imgs)):
         img_arr = generate_img_arr(gen_imgs[i])
         img_label = labels[i].argmax(dim=-1).item()
         if is_train:
-            save_img(img_arr, label=img_label, epoch=epoch, save_dir=f"{args.save_dir}/generated_images/train_epoch_{epoch}")
+            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train")
         else:
-            save_img(img_arr, label=img_label, epoch=epoch, save_dir=f"{args.save_dir}/generated_images/valid_epoch_{epoch}")
+            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid")
 
 '''
 Save data like losses and dts.
 '''
-def save_data(args, data, data_name, epoch, is_train, global_data=False):
+def save_data(args, data, data_name, epoch, is_train, outpath, global_data=False):
+    make_dir(f"{outpath}/model_evaluations/pkl_files")
     if not global_data:
         if is_train:
-            with open(f'{args.save_dir}/model_evaluations/train_{data_name}_epoch_{epoch}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch}.pkl', 'wb'):
                 pickle.dump(data, f)
         else:
-            with open(f'{args.save_dir}/model_evaluations/valid_{data_name}_epoch_{epoch}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch}.pkl', 'wb'):
                 pickle.dump(data, f)
     else:
         if is_train:
-            with open(f'{args.save_dir}/model_evaluations/train_{data_name}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl', 'wb'):
                 pickle.dump(data, f)
         else:
-            with open(f'{args.save_dir}/model_evaluations/valid_{data_name}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl', 'wb'):
                 pickle.dump(data, f)
 '''
 Data initialization.
@@ -92,7 +95,8 @@ def initialize_data(args):
 '''
 Plot evaluation results
 '''
-def plot_eval_results(args, data, data_name):
+def plot_eval_results(args, data, data_name, outpath):
+    make_dir(f"{outpath}/model_evaluations")
     if args.load_to_train:
         start = args.load_epoch + 1
         end = start + args.num_epochs
@@ -113,6 +117,13 @@ def plot_eval_results(args, data, data_name):
     plt.ylabel(data_name)
     plt.title(data_name)
     save_name = "_".join(data_name.lower().split(" "))
-    plt.savefig(f"{save_name}.pdf")
-    plt.savefig(f"{save_name}.png", dpi=600)
+    plt.savefig(f"{outpath}/model_evaluations/{save_name}.pdf")
+    plt.savefig(f"{outpath}/model_evaluations/{save_name}.png", dpi=600)
     plt.close()
+
+
+'''
+Generate folder name
+'''
+def gen_fname(args):
+    return f"MnistAutoencoder_lr_{args.lr}_numEpochs_{args.num_epochs}_batchSize_{args.batch_size}"
