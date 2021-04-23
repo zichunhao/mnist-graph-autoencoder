@@ -1,11 +1,11 @@
 import args
-from args import setup_argparse
 import json
 import logging
 
 import torch
+from args import setup_argparse
 from models.Autoencoder import Autoencoder
-from utils import initialize_data, make_dir
+from utils import initialize_data, make_dir, gen_fname, plot_eval_results
 from train import train_loop
 
 if __name__ == "__main__":
@@ -42,6 +42,8 @@ if __name__ == "__main__":
     else:
         print('The model is initialized on CPU...')
 
+    print(f'Training over {args.num_epochs} epochs...')
+
     '''Training'''
     # Toad existing model
     if args.load_to_train:
@@ -50,13 +52,19 @@ if __name__ == "__main__":
             model.load_state_dict(torch.load(f'{outpath}/epoch_{args.load_epoch}_weights.pth'))
         else:
             model.load_state_dict(torch.load(f'{outpath}/epoch_{args.load_epoch}_weights.pth', map_location=torch.device('cpu')))
-    # create new model
+    # Create new model
     else:
-        outpath = args.save_dir
+        outpath = f"{args.save_dir}/{gen_fname(args)}"
 
     make_dir(outpath)
     with open(f"{outpath}/args_cache.json", "w") as f:
         json.dump(vars(args), f)
 
+    # Training
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
-    train_avg_losses, valid_avg_losses, train_dts, valid_dts = train_loop(args, model, train_loader, valid_loader, optimizer)
+    train_avg_losses, valid_avg_losses, train_dts, valid_dts = train_loop(args, model, train_loader, valid_loader, optimizer, outpath)
+
+    '''Plotting evaluation results'''
+    plot_eval_results(args, data=(train_avg_losses, valid_avg_losses), data_name="Losses", outpath=outpath)
+    plot_eval_results(args, data=(train_dts, valid_dts), data_name="Time durations", outpath=outpath)
+    plot_eval_results(args, data=[train_dts[i] + valid_dts[i] for i in range(len(train_dts))], data_name="Total time durations per epoch", outpath=outpath)
