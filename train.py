@@ -24,13 +24,23 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train):
         else:
             print(f"epoch {epoch}, batch {i+1}/{len(loader)}, valid_loss={batch_loss.item()}", end='\r', flush=True)
 
-        labels.append(Y)
-        gen_imgs.append(batch_gen_imgs)
+        # Save all generated images
+        if args.save_figs and args.save_all_figs:
+            labels.append(Y)
+            gen_imgs.append(batch_gen_imgs)
+        # Save only the last batch
+        else:
+            if (i == len(loader) - 1):
+                labels.append(Y)
+                gen_imgs.append(batch_gen_imgs)
 
     # Compute average loss
     epoch_avg_loss = epoch_total_loss / len(loader)
 
     make_dir(path=f"{args.save_dir}/epoch_avg_loss")
+
+    for i in range(len(gen_imgs)):
+        save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
 
     return epoch_avg_loss, gen_imgs
 
@@ -74,16 +84,6 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath):
 
         save_data(data=valid_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=False)
         save_data(data=valid_dt, data_name="dt", epoch=epoch, outpath=outpath, is_train=False)
-
-        # Save all generated images
-        if args.save_figs and args.save_all_figs:
-            for i in range(len(train_gen_imgs)):
-                save_gen_imgs(train_gen_imgs[i], labels, epoch, is_train=True, outpath)
-                save_gen_imgs(valid_gen_imgs[i], labels, epoch, is_train=False, outpath)
-        # Save only the last batch
-        else:
-            save_gen_imgs(train_gen_imgs[-1], labels, epoch, is_train=True, outpath)
-            save_gen_imgs(valid_gen_imgs[-1], labels, epoch, is_train=False, outpath)
 
         print(f'epoch={epoch+1}/{args.num_epochs if not args.load_to_train else args.num_epochs+args.load_epoch} '
               + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
