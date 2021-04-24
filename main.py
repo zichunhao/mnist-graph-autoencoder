@@ -29,12 +29,10 @@ if __name__ == "__main__":
     train_loader, valid_loader = initialize_data(args)
 
     # Initialize model
-    model = Autoencoder(
-        num_nodes=args.num_nodes, node_size=args.input_node_size,
-        latent_node_size=args.latent_node_size, num_hidden_node_layers=args.num_hidden_node_layers,
-        hidden_edge_size=args.hidden_edge_size, output_edge_size=args.output_edge_size, num_mps=args.num_mps,
-        dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm
-    )
+    model = Autoencoder(num_nodes=args.num_nodes, node_size=args.input_node_size,
+                        latent_node_size=args.latent_node_size, num_hidden_node_layers=args.num_hidden_node_layers,
+                        hidden_edge_size=args.hidden_edge_size, output_edge_size=args.output_edge_size, num_mps=args.num_mps,
+                        dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm)
 
     if (next(model.parameters()).is_cuda):
         print('The model is initialized on GPU...')
