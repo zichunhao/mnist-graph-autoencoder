@@ -34,6 +34,11 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train):
                 labels.append(Y)
                 gen_imgs.append(batch_gen_imgs)
 
+    # Save model
+    if is_train:
+        make_dir(f'{outpath}/weights')
+        torch.save(model.state_dict(), f"{outpath}/weights/epoch_{epoch+1}_weights.pth")
+
     # Compute average loss
     epoch_avg_loss = epoch_total_loss / len(loader)
 
@@ -63,10 +68,6 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath):
         start = time.time()
         train_avg_loss, train_gen_imgs = train(args, model, train_loader, epoch, optimizer, outpath, is_train=True)
         train_dt = time.time() - start
-
-        # Save model
-        make_dir(f'{outpath}/weights')
-        torch.save(model.state_dict(), f"{outpath}/weights/epoch_{epoch+1}_weights.pth")
 
         train_avg_losses.append(train_avg_loss)
         train_dts.append(train_dt)
