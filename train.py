@@ -86,7 +86,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath):
             save_gen_imgs(valid_gen_imgs[-1], labels, epoch, is_train=False, outpath)
 
         print(f'epoch={epoch+1}/{args.num_epochs if not args.load_to_train else args.num_epochs+args.load_epoch} '
-            + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
+              + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
 
     # Save global data
     save_data(data=train_avg_losses, data_name="losses", epoch="global", outpath=outpath, is_train=True, global_data=True)
