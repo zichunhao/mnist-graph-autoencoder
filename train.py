@@ -9,6 +9,11 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
     labels = []
     gen_imgs = []
 
+    if is_train:
+        model.train()
+    else:
+        model.eval()
+
     for i, batch in enumerate(loader, 0):
         X, Y = batch
         X.to(device)
@@ -16,7 +21,7 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
         loss = nn.MSELoss().to(device)
-        batch_loss = loss(batch_gen_imgs.to(device), X)
+        batch_loss = loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss.cpu()
         if is_train:
             optimizer.zero_grad()
