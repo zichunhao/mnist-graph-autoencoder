@@ -31,7 +31,7 @@ def save_img(img_arr, label, epoch, outpath):
     make_dir(outpath)
 
     plt.imshow(img_arr, cmap='gray')
-    plt.savefig(f"{outpath}/epoch_{epoch}_num_{label}_{generate_id()}.png", dpi=600)
+    plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{generate_id()}.png", dpi=600)
     plt.close()
 
 '''
@@ -68,10 +68,10 @@ def save_data(data, data_name, epoch, is_train, outpath, global_data=False):
     make_dir(f"{outpath}/model_evaluations/pkl_files")
     if not global_data:
         if is_train:
-            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch}.pkl', 'wb') as f:
+            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch+1}.pkl', 'wb') as f:
                 pickle.dump(data, f)
         else:
-            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch}.pkl', 'wb') as f:
+            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch+1}.pkl', 'wb') as f:
                 pickle.dump(data, f)
     else:
         if is_train:
