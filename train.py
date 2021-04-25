@@ -10,7 +10,9 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
     gen_imgs = []
 
     for i, batch in enumerate(loader, 0):
-        X, Y = batch.to(device)
+        X, Y = batch
+        X.to(device)
+        Y.to(device)
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
         loss = nn.MSELoss()
