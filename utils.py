@@ -83,12 +83,12 @@ def save_data(data, data_name, epoch, is_train, outpath, global_data=False):
 '''
 Data initialization.
 '''
-def initialize_data(args, device):
+def initialize_data(args):
     data_train = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=True)
     data_test = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=False)
 
-    train_loader = DataLoader(data_train, batch_size=args.batch_size, shuffle=True).to(device)
-    test_loader = DataLoader(data_test, batch_size=args.batch_size, shuffle=False).to(device)
+    train_loader = DataLoader(data_train, batch_size=args.batch_size, shuffle=True)
+    test_loader = DataLoader(data_test, batch_size=args.batch_size, shuffle=False)
 
     return train_loader, test_loader
 
