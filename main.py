@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     '''Initializations'''
     # Initialize and load dataset
-    train_loader, valid_loader = initialize_data(args)
+    train_loader, valid_loader = initialize_data(args, device)
 
     # Initialize model
     model = Autoencoder(num_nodes=args.num_nodes, node_size=args.input_node_size,
