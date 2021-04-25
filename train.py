@@ -49,7 +49,7 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
 
     return epoch_avg_loss, gen_imgs
 
-def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, device):
+def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, device=None):
     if device is None:
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

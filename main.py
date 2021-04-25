@@ -61,7 +61,7 @@ if __name__ == "__main__":
 
     # Training
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
-    train_avg_losses, valid_avg_losses, train_dts, valid_dts = train_loop(args, model, train_loader, valid_loader, optimizer, outpath)
+    train_avg_losses, valid_avg_losses, train_dts, valid_dts = train_loop(args, model, train_loader, valid_loader, optimizer, outpath, device=device)
 
     '''Plotting evaluation results'''
     plot_eval_results(args, data=(train_avg_losses, valid_avg_losses), data_name="Losses", outpath=outpath)
