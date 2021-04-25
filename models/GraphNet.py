@@ -37,7 +37,7 @@ class GraphNet(nn.Module):
                  hidden_edge_size, output_edge_size, num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
         if device is None:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        super(GraphNet, self).__init__(device=device)
+        super(GraphNet, self).__init__()
 
         # Nodes
         self.num_nodes = num_nodes  # Number of nodes in graph

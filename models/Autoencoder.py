@@ -40,7 +40,8 @@ class Autoencoder(nn.Module):
                  num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
         if device is None:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        super(Autoencoder, self).__init__(device=device)
+
+        super(Autoencoder, self).__init__()
 
         self.num_nodes = num_nodes
         self.node_size = node_size
