@@ -14,11 +14,7 @@ if __name__ == "__main__":
     if args.print_logging:
         logging.basicConfig(level=logging.INFO)
 
-    if torch.cuda.is_available():
-        torch.set_default_tensor_type('torch.cuda.FloatTensor')
-        device = torch.device("cuda:0")
-    else:
-        device = torch.device("cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     print(f"Num of GPUs: {torch.cuda.device_count()}")
 
