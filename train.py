@@ -47,7 +47,7 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
     # Compute average loss
     epoch_avg_loss = epoch_total_loss / len(loader)
 
-    make_dir(path=f"{args.save_dir}/epoch_avg_loss")
+    make_dir(path=f"{outpath}/epoch_avg_loss")
 
     for i in range(len(gen_imgs)):
         save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
