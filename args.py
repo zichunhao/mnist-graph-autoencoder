@@ -34,7 +34,7 @@ def setup_argparse():
                         help='Whether to include batch normalizations in the graph. Default: True.')
 
     # Training options and hyperparameters
-    parser.add_argument('--batch-size', type=int, default=32, metavar='',
+    parser.add_argument('--batch-size', type=int, default=8, metavar='',
                         help='Batch size.')
     parser.add_argument('--num-epochs', type=int, default=64, metavar='',
                         help='Number of epochs for training.')
