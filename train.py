@@ -10,10 +10,10 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
     gen_imgs = []
 
     for i, batch in enumerate(loader, 0):
-        X, Y = batch
+        X, Y = batch.to(device)
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
-        loss = nn.MSELoss().to(device)
+        loss = nn.MSELoss()
         batch_loss = loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
         if is_train:
