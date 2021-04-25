@@ -40,7 +40,7 @@ def setup_argparse():
                         help='Number of epochs for training.')
     parser.add_argument('--lr', type=float, default=1e-3, metavar='',
                         help='Learning rate.')
-    parser.add_argument('--save-dir', type=str, default='trained_models', metavar='',
+    parser.add_argument('--save-dir', type=str, default='mnist_trained_models', metavar='',
                         help='The directory to save trained models and figures.')
     parser.add_argument('--save-figs', type=strToBool, default=True, metavar='',
                         help='Whether to save generated figures.')
