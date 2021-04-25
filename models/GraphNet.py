@@ -35,6 +35,8 @@ class GraphNet(nn.Module):
 
     def __init__(self, num_nodes, input_node_size, output_node_size, num_hidden_node_layers,
                  hidden_edge_size, output_edge_size, num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
+        if device is None:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         super(GraphNet, self).__init__()
 
         # Nodes
@@ -73,10 +75,7 @@ class GraphNet(nn.Module):
         self.bn_edge = nn.ModuleList()
         self.bn_node = nn.ModuleList()
 
-        if device is None:
-            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = device
+        self.device = device
 
         for i in range(self.num_mps):
             # Edge feature layers

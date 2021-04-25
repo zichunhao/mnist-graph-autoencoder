@@ -55,14 +55,14 @@ class Autoencoder(nn.Module):
         self.encoder = GraphNet(num_nodes=self.num_nodes, input_node_size=node_size, output_node_size=self.latent_node_size,
                                 num_hidden_node_layers=num_hidden_node_layers, hidden_edge_size=hidden_edge_size,
                                 output_edge_size=output_edge_size, num_mps=num_mps, dropout=dropout, alpha=alpha,
-                                intensity=self.intensity, batch_norm=batch_norm, device=self.device)
+                                intensity=self.intensity, batch_norm=batch_norm, device=self.device).to(self.device)
 
-        self.linear = nn.Linear(self.latent_node_size, self.num_nodes*self.latent_node_size)
+        self.linear = nn.Linear(self.latent_node_size, self.num_nodes*self.latent_node_size).to(self.device)
 
         self.decoder = GraphNet(num_nodes=self.num_nodes, input_node_size=self.latent_node_size, output_node_size=self.node_size,
                                 num_hidden_node_layers=num_hidden_node_layers, hidden_edge_size=hidden_edge_size,
                                 output_edge_size=output_edge_size, num_mps=num_mps, dropout=dropout, alpha=alpha,
-                                intensity=self.intensity, batch_norm=batch_norm, device=self.device)
+                                intensity=self.intensity, batch_norm=batch_norm, device=self.device).to(self.device)
 
     """
     The forward pass of the Autoencoder.
