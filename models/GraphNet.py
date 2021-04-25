@@ -34,7 +34,7 @@ class GraphNet(nn.Module):
     """
 
     def __init__(self, num_nodes, input_node_size, output_node_size, num_hidden_node_layers,
-                 hidden_edge_size, output_edge_size, num_mps, dropout, alpha, intensity, batch_norm=True):
+                 hidden_edge_size, output_edge_size, num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
         super(GraphNet, self).__init__()
 
         # Nodes
@@ -72,6 +72,11 @@ class GraphNet(nn.Module):
         self.bn_edge_hidden = nn.ModuleList()
         self.bn_edge = nn.ModuleList()
         self.bn_node = nn.ModuleList()
+
+        if device is None:
+            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device = device
 
         for i in range(self.num_mps):
             # Edge feature layers
@@ -113,7 +118,7 @@ class GraphNet(nn.Module):
         self.x = x
         batch_size = x.shape[0]
 
-        x = F.pad(x, (0, self.hidden_node_size - self.input_node_size, 0, 0, 0, 0))
+        x = F.pad(x, (0, self.hidden_node_size - self.input_node_size, 0, 0, 0, 0)).to(self.device)
 
         for i in range(self.num_mps):
             # Edge features
@@ -197,6 +202,9 @@ class GraphNet(nn.Module):
     def getA(self, x, batch_size):
         x1 = x.repeat(1, 1, self.num_nodes).view(batch_size, self.num_nodes * self.num_nodes, self.hidden_node_size)
         x2 = x.repeat(1, self.num_nodes, 1) # 1*(self.num_nodes)*1 tensor with repeated x along axis=1
+
+        x1.to(self.device)
+        x2.to(self.device)
 
         if self.intensity:
             dists = torch.norm(x2[:, :, :-1] - x1[:, :, :-1] + 1e-12, dim=2).unsqueeze(2)

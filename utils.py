@@ -11,7 +11,7 @@ from MNISTGraphDataset import MNISTGraphDataset
 Convert an array of coordinates [[xi, yi, Ii]] to a 2-D image array.
 '''
 def generate_img_arr(coords, img_dim=28):
-    coords = coords.detach().numpy()
+    coords = coords.detach().cpu().numpy()
     coords = np.array(coords, copy=True)
     # Denormalization
     coords[:, :2]  = (coords[:, :2] + 1) / 2 * img_dim - 1e-5  # x,y
@@ -107,7 +107,7 @@ def plot_eval_results(args, data, data_name, outpath):
     x = [i for i in range(start, end+1)]
 
     if type(data) in [tuple, list] and len(data) == 2:
-        train, valid = data
+        train, valid = data.cpu()
         plt.plot(x, train, label='Train')
         plt.plot(x, valid, label='Valid')
     else:
