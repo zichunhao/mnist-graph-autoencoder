@@ -68,17 +68,17 @@ def save_data(data, data_name, epoch, is_train, outpath, global_data=False):
     make_dir(f"{outpath}/model_evaluations/pkl_files")
     if not global_data:
         if is_train:
-            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch}.pkl', 'wb') as f:
                 pickle.dump(data, f)
         else:
-            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch}.pkl', 'wb') as f:
                 pickle.dump(data, f)
     else:
         if is_train:
-            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl', 'wb') as f:
                 pickle.dump(data, f)
         else:
-            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl', 'wb'):
+            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl', 'wb') as f:
                 pickle.dump(data, f)
 '''
 Data initialization.
