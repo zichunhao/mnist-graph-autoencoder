@@ -34,6 +34,9 @@ if __name__ == "__main__":
                         hidden_edge_size=args.hidden_edge_size, output_edge_size=args.output_edge_size, num_mps=args.num_mps,
                         dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm)
 
+    if torch.cuda.is_available():
+        model = model.cuda();
+
     if (next(model.parameters()).is_cuda):
         print('The model is initialized on GPU...')
     else:
