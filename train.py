@@ -13,7 +13,7 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
         X, Y = batch
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
-        loss = nn.MSELoss()
+        loss = nn.MSELoss().to(device)
         batch_loss = loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
         if is_train:
