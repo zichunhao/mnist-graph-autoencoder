@@ -16,8 +16,8 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
         loss = nn.MSELoss().to(device)
-        batch_loss = loss(batch_gen_imgs, X)
-        epoch_total_loss += batch_loss
+        batch_loss = loss(batch_gen_imgs.to(device), X)
+        epoch_total_loss += batch_loss.cpu()
         if is_train:
             optimizer.zero_grad()
             batch_loss.backward()
