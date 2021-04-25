@@ -38,7 +38,9 @@ class Autoencoder(nn.Module):
     """
     def __init__(self, num_nodes, node_size, latent_node_size, num_hidden_node_layers, hidden_edge_size, output_edge_size,
                  num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
-        super(Autoencoder, self).__init__()
+        if device is None:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        super(Autoencoder, self).__init__(device=device)
 
         self.num_nodes = num_nodes
         self.node_size = node_size
@@ -47,10 +49,7 @@ class Autoencoder(nn.Module):
         self.num_mps = num_mps
         self.intensity = intensity
 
-        if device is None:
-            self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device = device
+        self.device = device
 
         self.encoder = GraphNet(num_nodes=self.num_nodes, input_node_size=node_size, output_node_size=self.latent_node_size,
                                 num_hidden_node_layers=num_hidden_node_layers, hidden_edge_size=hidden_edge_size,
