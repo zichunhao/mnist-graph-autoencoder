@@ -209,4 +209,4 @@ class GraphNet(nn.Module):
         else:
             A = torch.cat((x1, x2), 2).view(batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
 
-        return A.to(device)
+        return A.to(self.device)
