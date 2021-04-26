@@ -14,7 +14,7 @@ def setup_argparse():
                         help='Number of nodes in both encoder and decoder. This is also the number of brightest points to keep.')
     parser.add_argument('--inputNodeSize', type=int, default=3, metavar='',
                         help='Dimension of node features. Default: 3, for (x,y,I).')
-    parser.add_argument('--latent-nodeSize', type=int, default=32, metavar='',
+    parser.add_argument('--latentNodeSize', type=int, default=32, metavar='',
                         help='Dimension of latent node features.')
     parser.add_argument('--num-hiddenNodeLayers', type=int, default=2, metavar='',
                         help='The number of hidden node layers.')
