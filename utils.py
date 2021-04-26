@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import uuid
-import pickle
+import torch
 
 from torch.utils.data import DataLoader
 from MNISTGraphDataset import MNISTGraphDataset
@@ -68,18 +68,14 @@ def save_data(data, data_name, epoch, is_train, outpath, global_data=False):
     make_dir(f"{outpath}/model_evaluations/pkl_files")
     if not global_data:
         if is_train:
-            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch+1}.pkl', 'wb') as f:
-                pickle.dump(data, f)
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch+1}.pkl')
         else:
-            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch+1}.pkl', 'wb') as f:
-                pickle.dump(data, f)
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch+1}.pkl')
     else:
         if is_train:
-            with open(f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl', 'wb') as f:
-                pickle.dump(data, f)
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl')
         else:
-            with open(f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl', 'wb') as f:
-                pickle.dump(data, f)
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl')
 '''
 Data initialization.
 '''
