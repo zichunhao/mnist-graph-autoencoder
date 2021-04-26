@@ -19,7 +19,7 @@ class MNISTGraphDataset(Dataset):
 
         print(f"shape={dataset.shape}")
 
-        X_pre = (dataset[:, 1:] - 127.5) / 255.0  # Intensity normalizations (dataset[:, 0] are labels)
+        X_pre = (dataset[:, 1:] - 127.5) / 127.5  # Intensity normalizations (dataset[:, 0] are labels) to [-1, 1]
 
         imrange = np.linspace(-0.5, 0.5, num=img_dim, endpoint=False)
 
