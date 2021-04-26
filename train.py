@@ -46,10 +46,10 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
 
     # Save model
     if is_train:
-        make_dir(f'{outpath}/encoder_weights')
-        make_dir(f'{outpath}/decoder_weights')
-        torch.save(encoder.state_dict(), f"{outpath}/encoder_weights/epoch_{epoch+1}_encoder_weights.pth")
-        torch.save(decoder.state_dict(), f"{outpath}/decoder_weights/epoch_{epoch+1}_decoder_weights.pth")
+        make_dir(f'{outpath}/weights_encoder')
+        make_dir(f'{outpath}/weights_encoder')
+        torch.save(encoder.state_dict(), f"{outpath}/weights_encoder/epoch_{epoch+1}_encoder_weights.pth")
+        torch.save(decoder.state_dict(), f"{outpath}/weights_encoder/epoch_{epoch+1}_decoder_weights.pth")
 
     # Compute average loss
     epoch_avg_loss = epoch_total_loss / len(loader)
