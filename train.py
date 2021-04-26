@@ -78,7 +78,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
         train_dt = time.time() - start
 
         train_avg_losses.append(train_avg_loss.cpu())
-        train_dts.append(train_dt.cpu())
+        train_dts.append(train_dt)
 
         save_data(data=train_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=True)
         save_data(data=train_dt, data_name="dt", epoch=epoch, outpath=outpath, is_train=True)
@@ -89,7 +89,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
         valid_dt = time.time() - start
 
         valid_avg_losses.append(train_avg_loss.cpu())
-        valid_dts.append(valid_dt.cpu())
+        valid_dts.append(valid_dt)
 
         save_data(data=valid_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=False)
         save_data(data=valid_dt, data_name="dt", epoch=epoch, outpath=outpath, is_train=False)
