@@ -18,9 +18,10 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
         X, Y = batch[0].to(device), batch[1]
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
-        loss = nn.MSELoss().cpu()
-        batch_loss = loss(batch_gen_imgs.cpu(), X.cpu())
+        loss = nn.MSELoss()
+        batch_loss = loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
+
         if is_train:
             optimizer.zero_grad()
             batch_loss.backward()
@@ -46,12 +47,18 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
 
     # Compute average loss
     epoch_avg_loss = epoch_total_loss / len(loader)
-
     make_dir(path=f"{outpath}/epoch_avg_loss")
+    save_data(epoch_avg_loss, "loss", epoch, is_train, outpath)
 
     for i in range(len(gen_imgs)):
         save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
 
+    return epoch_avg_loss, gen_imgs
+
+@torch.no_grad()
+def test(args, model, loader, epoch, optimizer, outpath, device):
+    with torch.no_grad():
+        epoch_avg_loss, gen_imgs = train(args, model, loader, epoch, optimizer, outpath, is_train=False, device=device)
     return epoch_avg_loss, gen_imgs
 
 def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, device=None):
@@ -85,7 +92,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
 
         # Validation
         start = time.time()
-        valid_avg_loss, valid_gen_imgs = train(args, model, valid_loader, epoch, optimizer, outpath, is_train=False, device=device)
+        valid_avg_loss, valid_gen_imgs = test(args, model, valid_loader, epoch, optimizer, outpath, device)
         valid_dt = time.time() - start
 
         valid_avg_losses.append(train_avg_loss.cpu())
