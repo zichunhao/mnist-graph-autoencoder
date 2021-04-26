@@ -30,9 +30,9 @@ if __name__ == "__main__":
     train_loader, valid_loader = initialize_data(args)
 
     # Initialize model
-    model = Autoencoder(num_nodes=args.num_nodes, node_size=args.input_node_size,
-                        latent_node_size=args.latent_node_size, num_hidden_node_layers=args.num_hidden_node_layers,
-                        hidden_edge_size=args.hidden_edge_size, output_edge_size=args.output_edge_size, num_mps=args.num_mps,
+    model = Autoencoder(num_nodes=args.num_nodes, node_size=args.inputNodeSize,
+                        latent_node_size=args.latentNodeSize, num_hidden_node_layers=args.num_hiddenNodeLayers,
+                        hidden_edge_size=args.hiddenEdgeSize, output_edge_size=args.outputEdgeSize, num_mps=args.num_mps,
                         dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm, device=device)
 
     model.to(device)
@@ -46,8 +46,8 @@ if __name__ == "__main__":
 
     '''Training'''
     # Toad existing model
-    if args.load_to_train:
-        outpath = args.load_model_path
+    if args.load_toTrain:
+        outpath = args.load_modelPath
         if torch.cuda.is_available():
             model.load_state_dict(torch.load(f'{outpath}/epoch_{args.load_epoch}_weights.pth'))
         else:

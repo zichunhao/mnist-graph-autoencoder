@@ -12,15 +12,15 @@ def setup_argparse():
     # Model options
     parser.add_argument('--num-nodes', type=int, default=100, metavar='',
                         help='Number of nodes in both encoder and decoder. This is also the number of brightest points to keep.')
-    parser.add_argument('--input-node-size', type=int, default=3, metavar='',
+    parser.add_argument('--inputNodeSize', type=int, default=3, metavar='',
                         help='Dimension of node features. Default: 3, for (x,y,I).')
-    parser.add_argument('--latent-node-size', type=int, default=32, metavar='',
+    parser.add_argument('--latent-nodeSize', type=int, default=32, metavar='',
                         help='Dimension of latent node features.')
-    parser.add_argument('--num-hidden-node-layers', type=int, default=2, metavar='',
+    parser.add_argument('--num-hiddenNodeLayers', type=int, default=2, metavar='',
                         help='The number of hidden node layers.')
-    parser.add_argument('--hidden-edge-size', type=int, default=32, metavar='',
+    parser.add_argument('--hiddenEdgeSize', type=int, default=32, metavar='',
                         help='Dimension of hidden edge features.')
-    parser.add_argument('--output-edge-size', type=int, default=32, metavar='',
+    parser.add_argument('--outputEdgeSize', type=int, default=32, metavar='',
                         help='Dimension of output edge features.')
     parser.add_argument('--num-mps', type=int, default=3, metavar='',
                         help='Number of message passing.')
@@ -44,11 +44,11 @@ def setup_argparse():
                         help='The directory to save trained models and figures.')
     parser.add_argument('--save-figs', type=strToBool, default=True, metavar='',
                         help='Whether to save generated figures.')
-    parser.add_argument('--save-all-figs', type=strToBool, default=False, metavar='',
+    parser.add_argument('--save-allFigs', type=strToBool, default=False, metavar='',
                         help='Whether to save figures generated in ALL epochs.')
-    parser.add_argument('--load-to-train', type=strToBool, default=False, metavar='',
+    parser.add_argument('--load-toTrain', type=strToBool, default=False, metavar='',
                         help='Whether to load existing (trained) model for training.')
-    parser.add_argument('--load-model-path', type=str, default=None, metavar='',
+    parser.add_argument('--load-modelPath', type=str, default=None, metavar='',
                         help='Path of the trained model to load.')
     parser.add_argument('--load-epoch', type=int, default=None, metavar='',
                         help='Epoch number of the trained model to load.')
