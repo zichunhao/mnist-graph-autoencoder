@@ -202,9 +202,6 @@ class GraphNet(nn.Module):
         x1 = x.repeat(1, 1, self.num_nodes).view(batch_size, self.num_nodes * self.num_nodes, self.hidden_node_size)
         x2 = x.repeat(1, self.num_nodes, 1) # 1*(self.num_nodes)*1 tensor with repeated x along axis=1
 
-        x1.to(self.device)
-        x2.to(self.device)
-
         if self.intensity:
             dists = torch.norm(x2[:, :, :-1] - x1[:, :, :-1] + 1e-12, dim=2).unsqueeze(2)
             int_diffs = 1 - ((x2[:, :, -1] - x1[:, :, -1])).unsqueeze(2)  # Iij = 1 - (Ij - Ii)
@@ -212,4 +209,4 @@ class GraphNet(nn.Module):
         else:
             A = torch.cat((x1, x2), 2).view(batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
 
-        return A
+        return A.to(device)
