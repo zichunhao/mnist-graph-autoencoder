@@ -10,7 +10,7 @@ def setup_argparse():
                         help='The size of the figure. Default: 28 (for MNIST figures).')
 
     # Model options
-    parser.add_argument('--num-nodes', type=int, default=100, metavar='',
+    parser.add_argument('--num-nodes', type=int, default=75, metavar='',
                         help='Number of nodes in both encoder and decoder. This is also the number of brightest points to keep.')
     parser.add_argument('--inputNodeSize', type=int, default=3, metavar='',
                         help='Dimension of node features. Default: 3, for (x,y,I).')
