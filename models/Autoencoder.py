@@ -39,7 +39,7 @@ class Autoencoder(nn.Module):
     def __init__(self, num_nodes, node_size, latent_node_size, num_hidden_node_layers, hidden_edge_size, output_edge_size,
                  num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
         if device is None:
-            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         super(Autoencoder, self).__init__()
 

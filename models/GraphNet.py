@@ -36,7 +36,7 @@ class GraphNet(nn.Module):
     def __init__(self, num_nodes, input_node_size, output_node_size, num_hidden_node_layers,
                  hidden_edge_size, output_edge_size, num_mps, dropout, alpha, intensity, batch_norm=True, device=None):
         if device is None:
-            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         super(GraphNet, self).__init__()
 
         # Nodes
@@ -199,8 +199,8 @@ class GraphNet(nn.Module):
                         [xn, yn, In, 0, 0, xn, yn, In, 0, 0]].
     """
     def getA(self, x, batch_size):
-        x1 = x.repeat(1, 1, self.num_nodes).view(batch_size, self.num_nodes * self.num_nodes, self.hidden_node_size)
-        x2 = x.repeat(1, self.num_nodes, 1) # 1*(self.num_nodes)*1 tensor with repeated x along axis=1
+        x1 = x.repeat(1, 1, self.num_nodes).view(batch_size, self.num_nodes * self.num_nodes, self.hidden_node_size).to(self.device)
+        x2 = x.repeat(1, self.num_nodes, 1).to(self.device) # 1*(self.num_nodes)*1 tensor with repeated x along axis=1
 
         if self.intensity:
             dists = torch.norm(x2[:, :, :-1] - x1[:, :, :-1] + 1e-12, dim=2).unsqueeze(2)
@@ -209,4 +209,4 @@ class GraphNet(nn.Module):
         else:
             A = torch.cat((x1, x2), 2).view(batch_size * self.num_nodes * self.num_nodes, self.input_edge_size)
 
-        return A.to(self.device)
+        return A

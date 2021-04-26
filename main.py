@@ -3,8 +3,10 @@ import logging
 
 import torch
 from args import setup_argparse
-from models.Autoencoder import Autoencoder
-from utils import initialize_data, make_dir, gen_fname, plot_eval_results
+
+from models.Encoder import Encoder
+from models.Decoder import Decoder
+from utils.utils import initialize_data, make_dir, gen_fname, plot_eval_results
 from train import train_loop
 
 if __name__ == "__main__":
@@ -14,7 +16,7 @@ if __name__ == "__main__":
     if args.print_logging:
         logging.basicConfig(level=logging.INFO)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     print(f"Num of GPUs: {torch.cuda.device_count()}")
 
@@ -29,29 +31,40 @@ if __name__ == "__main__":
     # Initialize and load dataset
     train_loader, valid_loader = initialize_data(args)
 
-    # Initialize model
-    model = Autoencoder(num_nodes=args.num_nodes, node_size=args.inputNodeSize,
-                        latent_node_size=args.latentNodeSize, num_hidden_node_layers=args.num_hiddenNodeLayers,
-                        hidden_edge_size=args.hiddenEdgeSize, output_edge_size=args.outputEdgeSize, num_mps=args.num_mps,
-                        dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm, device=device)
+    # Initialize models
+    encoder = Encoder(num_nodes=args.num_nodes, node_size=args.inputNodeSize,
+                      latent_node_size=args.latentNodeSize, num_hidden_node_layers=args.num_hiddenNodeLayers,
+                      hidden_edge_size=args.hiddenEdgeSize, output_edge_size=args.outputEdgeSize, num_mps=args.num_mps,
+                      dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm, device=device).to(device)
 
-    model.to(device)
+    decoder = Decoder(num_nodes=args.num_nodes, node_size=args.inputNodeSize,
+                      latent_node_size=args.latentNodeSize, num_hidden_node_layers=args.num_hiddenNodeLayers,
+                      hidden_edge_size=args.hiddenEdgeSize, output_edge_size=args.outputEdgeSize, num_mps=args.num_mps,
+                      dropout=args.dropout, alpha=args.alpha, intensity=args.intensity, batch_norm=args.batch_norm, device=device).to(device)
 
-    if (next(model.parameters()).is_cuda):
-        print('The model is initialized on GPU...')
+    # Both on gpu
+    if (next(encoder.parameters()).is_cuda and next(encoder.parameters()).is_cuda):
+        print('The models are initialized on GPU...')
+    # One on cpu and the other on gpu
+    elif (next(encoder.parameters()).is_cuda or next(encoder.parameters()).is_cuda):
+        raise AssertionError("The encoder and decoder are not trained on the same device!")
+    # Both on cpu
     else:
-        print('The model is initialized on CPU...')
+        print('The models are initialized on CPU...')
 
     print(f'Training over {args.num_epochs} epochs...')
 
     '''Training'''
     # Toad existing model
     if args.load_toTrain:
+        assert (args.load_epoch is not None), 'Which epoch weights to load is not specified!'
         outpath = args.load_modelPath
         if torch.cuda.is_available():
-            model.load_state_dict(torch.load(f'{outpath}/epoch_{args.load_epoch}_weights.pth'))
+            encoder.load_state_dict(torch.load(f'{outpath}/encoder_weights/epoch_{args.load_epoch}_encoder_weights.pth'))
+            decoder.load_state_dict(torch.load(f'{outpath}/decoder_weights/epoch_{args.load_epoch}_decoder_weights.pth'))
         else:
-            model.load_state_dict(torch.load(f'{outpath}/epoch_{args.load_epoch}_weights.pth', map_location=torch.device('cpu')))
+            encoder.load_state_dict(torch.load(f'{outpath}/encoder_weights/epoch_{args.load_epoch}_encoder_weights.pth', map_location=torch.device('cpu')))
+            encoder.load_state_dict(torch.load(f'{outpath}/decoder_weights/epoch_{args.load_epoch}_decoder_weights.pth', map_location=torch.device('cpu')))
     # Create new model
     else:
         outpath = f"{args.save_dir}/{gen_fname(args)}"
@@ -61,8 +74,10 @@ if __name__ == "__main__":
         json.dump(vars(args), f)
 
     # Training
-    optimizer = torch.optim.Adam(model.parameters(), args.lr)
-    train_avg_losses, valid_avg_losses, train_dts, valid_dts = train_loop(args, model, train_loader, valid_loader, optimizer, outpath, device=device)
+    optimizer_encoder = torch.optim.Adam(encoder.parameters(), args.lr)
+    optimizer_decoder = torch.optim.Adam(decoder.parameters(), args.lr)
+    train_avg_losses, valid_avg_losses, train_dts, valid_dts = train_loop(args, encoder, decoder, train_loader, valid_loader,
+                                                                          optimizer_encoder, optimizer_decoder, outpath, device=device)
 
     '''Plotting evaluation results'''
     plot_eval_results(args, data=(train_avg_losses, valid_avg_losses), data_name="Losses", outpath=outpath)

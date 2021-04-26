@@ -2,33 +2,37 @@ import torch
 import torch.nn as nn
 import time
 
-from utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data
+from utils.utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data, plot_eval_results
+from utils.loss import chamfer_loss
 
-def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
+def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder, outpath, is_train, device):
     epoch_total_loss = 0
     labels = []
     gen_imgs = []
 
     if is_train:
-        model.train()
+        encoder.train()
+        decoder.train()
     else:
-        model.eval()
+        encoder.eval()
+        decoder.eval()
 
     for i, batch in enumerate(loader, 0):
         X, Y = batch[0].to(device), batch[1]
-        _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
+        batch_gen_imgs = decoder(encoder(X))
 
-        loss = nn.MSELoss()
-        batch_loss = loss(batch_gen_imgs, X)
+        batch_loss = chamfer_loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
 
         if is_train:
-            optimizer.zero_grad()
+            optimizer_encoder.zero_grad()
+            optimizer_decoder.zero_grad()
             batch_loss.backward()
-            optimizer.step()
-            print(f"epoch {epoch}, batch {i+1}/{len(loader)}, train_loss={batch_loss.item()}", end='\r', flush=True)
+            optimizer_encoder.step()
+            optimizer_decoder.step()
+            print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, train_loss={batch_loss.item()}", end='\r', flush=True)
         else:
-            print(f"epoch {epoch}, batch {i+1}/{len(loader)}, valid_loss={batch_loss.item()}", end='\r', flush=True)
+            print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, valid_loss={batch_loss.item()}", end='\r', flush=True)
 
         # Save all generated images
         if args.save_figs and args.save_allFigs:
@@ -42,8 +46,10 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
 
     # Save model
     if is_train:
-        make_dir(f'{outpath}/weights')
-        torch.save(model.state_dict(), f"{outpath}/weights/epoch_{epoch+1}_weights.pth")
+        make_dir(f'{outpath}/encoder_weights')
+        make_dir(f'{outpath}/decoder_weights')
+        torch.save(encoder.state_dict(), f"{outpath}/encoder_weights/epoch_{epoch+1}_encoder_weights.pth")
+        torch.save(decoder.state_dict(), f"{outpath}/decoder_weights/epoch_{epoch+1}_decoder_weights.pth")
 
     # Compute average loss
     epoch_avg_loss = epoch_total_loss / len(loader)
@@ -55,16 +61,17 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
     return epoch_avg_loss, gen_imgs
 
 @torch.no_grad()
-def test(args, model, loader, epoch, optimizer, outpath, device):
+def test(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder, outpath, device):
     with torch.no_grad():
-        epoch_avg_loss, gen_imgs = train(args, model, loader, epoch, optimizer, outpath, is_train=False, device=device)
+        epoch_avg_loss, gen_imgs = train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder,
+                                         outpath, is_train=False, device=device)
     return epoch_avg_loss, gen_imgs
 
-def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, device=None):
+def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_encoder, optimizer_decoder, outpath, device=None):
     if device is None:
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    assert (args.save_dir is not None), "Please specify save directory!"
+    assert (args.save_dir is not None), "Please specify directory of saving the models!"
     make_dir(args.save_dir)
 
     train_avg_losses = []
@@ -80,7 +87,8 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
 
         # Training
         start = time.time()
-        train_avg_loss, train_gen_imgs = train(args, model, train_loader, epoch, optimizer, outpath, is_train=True, device=device)
+        train_avg_loss, train_gen_imgs = train(args, encoder, decoder, train_loader, epoch,
+                                               optimizer_encoder, optimizer_decoder, outpath, is_train=True, device=device)
         train_dt = time.time() - start
 
         train_avg_losses.append(train_avg_loss.cpu())
@@ -91,7 +99,8 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
 
         # Validation
         start = time.time()
-        valid_avg_loss, valid_gen_imgs = test(args, model, valid_loader, epoch, optimizer, outpath, device)
+        valid_avg_loss, valid_gen_imgs = test(args, encoder, decoder, valid_loader, epoch,
+                                              optimizer_encoder, optimizer_decoder, outpath, device)
         valid_dt = time.time() - start
 
         valid_avg_losses.append(train_avg_loss.cpu())
@@ -102,6 +111,9 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
 
         print(f'epoch={epoch+1}/{args.num_epochs if not args.load_toTrain else args.num_epochs+args.load_epoch} '
               + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
+
+        if (epoch + 1 % 10 == 0):
+            plot_eval_results(args, epoch, "losses", outpath)
 
     # Save global data
     save_data(data=train_avg_losses, data_name="losses", epoch="global", outpath=outpath, is_train=True, global_data=True)
