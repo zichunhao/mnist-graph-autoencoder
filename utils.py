@@ -76,6 +76,7 @@ def save_data(data, data_name, epoch, is_train, outpath, global_data=False):
             torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl')
         else:
             torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl')
+            
 '''
 Data initialization.
 '''
@@ -93,7 +94,7 @@ Plot evaluation results
 '''
 def plot_eval_results(args, data, data_name, outpath):
     make_dir(f"{outpath}/model_evaluations")
-    if args.load_to_train:
+    if args.load_toTrain:
         start = args.load_epoch + 1
         end = start + args.num_epochs
     else:
@@ -122,4 +123,4 @@ def plot_eval_results(args, data, data_name, outpath):
 Generate folder name
 '''
 def gen_fname(args):
-    return f"MnistAutoencoder_lr_{args.lr}_numEpochs_{args.num_epochs}_batchSize_{args.batch_size}_latentNodeSize_{args.latent_node_size}"
+    return f"MnistAutoencoder_lr_{args.lr}_numEpochs_{args.num_epochs}_batchSize_{args.batch_size}_latentNodeSize_{args.latentNodeSize}"
