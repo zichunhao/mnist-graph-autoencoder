@@ -19,8 +19,8 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
         _, batch_gen_imgs = model(X)  # batch_latent_vecs, batch_gen_imgs
 
         loss = nn.MSELoss().to(device)
-        batch_loss = loss(batch_gen_imgs, X)
-        epoch_total_loss += batch_loss.cpu()
+        batch_loss = loss(batch_gen_imgs, X).cpu()
+        epoch_total_loss += batch_loss
         if is_train:
             optimizer.zero_grad()
             batch_loss.backward()
@@ -31,13 +31,13 @@ def train(args, model, loader, epoch, optimizer, outpath, is_train, device):
 
         # Save all generated images
         if args.save_figs and args.save_all_figs:
-            labels.append(Y)
-            gen_imgs.append(batch_gen_imgs)
+            labels.append(Y.cpu())
+            gen_imgs.append(batch_gen_imgs.cpu())
         # Save only the last batch
         else:
             if (i == len(loader) - 1):
-                labels.append(Y)
-                gen_imgs.append(batch_gen_imgs)
+                labels.append(Y.cpu())
+                gen_imgs.append(batch_gen_imgs.cpu())
 
     # Save model
     if is_train:
@@ -78,7 +78,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
         train_dt = time.time() - start
 
         train_avg_losses.append(train_avg_loss.cpu())
-        train_dts.append(train_dt)
+        train_dts.append(train_dt.cpu())
 
         save_data(data=train_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=True)
         save_data(data=train_dt, data_name="dt", epoch=epoch, outpath=outpath, is_train=True)
@@ -89,7 +89,7 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
         valid_dt = time.time() - start
 
         valid_avg_losses.append(train_avg_loss.cpu())
-        valid_dts.append(valid_dt)
+        valid_dts.append(valid_dt.cpu())
 
         save_data(data=valid_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=False)
         save_data(data=valid_dt, data_name="dt", epoch=epoch, outpath=outpath, is_train=False)
@@ -103,4 +103,4 @@ def train_loop(args, model, train_loader, valid_loader, optimizer, outpath, devi
     save_data(data=valid_avg_losses, data_name="losses", epoch="global", outpath=outpath, is_train=False, global_data=True)
     save_data(data=valid_dts, data_name="dts", epoch="global", outpath=outpath, is_train=False, global_data=True)
 
-    return train_avg_losses.cpu(), valid_avg_losses.cpu(), train_dts, valid_dts
+    return train_avg_losses, valid_avg_losses, train_dts, valid_dts
