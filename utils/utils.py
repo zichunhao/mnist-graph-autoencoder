@@ -8,21 +8,23 @@ from torch.utils.data import DataLoader
 from utils.MNISTGraphDataset import MNISTGraphDataset
 
 '''
-Convert an array of coordinates [[xi, yi, Ii]] to a 2-D image array.
+Convert a tensor of coordinates [[[xi, yi, Ii]]] to a 3-D torch tensor
+with shape (batch_size, num_pixs, 3).
 '''
-def generate_img_arr(coords, img_dim=28):
-    coords = coords.detach().cpu().numpy()
-    coords = np.array(coords, copy=True)
+def generate_img_tensor(graph_output, img_dim=28):
+    batch_size = len(graph_output)
+    output = torch.clone(graph_output)
     # Denormalization
-    coords[:, :2]  = (coords[:, :2] + 1) / 2 * img_dim - 1e-5  # x,y
-    coords[:, -1] = (coords[:, -1] + 1) * 127.5  # Intesity
+    output[:, :, :2]  = (output[:, :, :2] + 1) / 2 * img_dim - 1e-6
 
-    img_arr = np.zeros((img_dim, img_dim))
-    for pts in coords:
-        x,y,I = pts
-        x,y = int(x), int(y)
-        img_arr[y,x] = max(img_arr[y,x] + I, 255)  # row = y, col = x
-    return img_arr
+    img_tensor = torch.zeros((batch_size, img_dim, img_dim))
+    for i in range(batch_size):
+        for pts in output[i]:
+            x,y,I = pts
+            x,y = int(x),int(y)
+            img_tensor[y,x] = img_tensor[y,x] + I
+        img_tensor[i, :, :] = (torch.tanh(img_tensor[i, :, :]) + 1) * 127.5
+    return img_tensor
 
 '''
 Save generated image from an array in terms of coordinates.
@@ -54,7 +56,7 @@ def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath):
     make_dir(f"{outpath}/generated_images/train")
     make_dir(f"{outpath}/generated_images/valid")
     for i in range(len(gen_imgs)):
-        img_arr = generate_img_arr(gen_imgs[i])
+        img_arr = gen_imgs[i].cpu().detach().numpy()
         img_label = labels[i].argmax(dim=-1).item()
         if is_train:
             save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train")
