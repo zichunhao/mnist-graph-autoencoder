@@ -1,6 +1,21 @@
-# from Steven Tsan https://github.com/stsan9/AnomalyDetection4Jets/blob/emd/code/loss_util.py#L3
 import torch
 
+import torch.nn as nn
+
+class ChamferLoss(nn.Module):
+    def __init__(self):
+        super(ChamferLoss, self).__init__()
+
+    def forward(self, x, y):
+        num_pts = x.shape[0]
+        dist[:] = torch.pow(torch.cdist(x,y),2)
+        in_dist_out = torch.min(dist, dim=0)
+        out_dist_in = torch.min(dist, dim=1)
+        loss = torch.sum(in_dist_out.values + out_dist_in.values) / num_pts
+        loss.requres_grad = True
+
+'''Unused in this project'''
+# from Steven Tsan https://github.com/stsan9/AnomalyDetection4Jets/blob/emd/code/loss_util.py#L3
 def chamfer_loss(x, y):
     nparts = x.shape[0]
     dist = torch.pow(torch.cdist(x,y),2)
@@ -10,16 +25,6 @@ def chamfer_loss(x, y):
     loss.requres_grad = True
     return loss
 
-def chamfer_loss_batch(x, y):
-    nparts = x.shape[0]
-    dist = torch.pow(torch.cdist(x,y),2)
-    in_dist_out = torch.min(dist,dim=0)
-    out_dist_in = torch.min(dist,dim=1)
-    loss = torch.sum(in_dist_out.values + out_dist_in.values) / nparts
-    loss.requres_grad = True
-    return loss
-
-'''Unused in this project'''
 # Reconstruction + KL divergence losses
 def vae_loss(x, y, mu, logvar):
     BCE = chamfer_loss(x,y)
