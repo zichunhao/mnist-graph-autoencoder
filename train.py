@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import time
 
-from utils.utils import make_dir, generate_img_arr, generate_img_tensor, save_img, save_gen_imgs, save_data, plot_eval_results
+from utils.utils import make_dir, generate_img_tensor, save_img, save_gen_imgs, save_data, plot_eval_results
 from utils.loss import chamfer_loss
 
 def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder, outpath, is_train, device):
