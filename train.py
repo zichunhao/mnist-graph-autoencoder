@@ -3,7 +3,7 @@ import torch.nn as nn
 import time
 
 from utils.utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data, plot_eval_results
-from utils.loss import chamfer_loss
+from utils.loss import chamfer_loss_batch
 
 def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder, outpath, is_train, device):
     epoch_total_loss = 0
@@ -21,9 +21,10 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
         X, Y = batch[0].to(device), batch[1]
         batch_gen_imgs = decoder(encoder(X))
 
-        batch_loss = chamfer_loss(batch_gen_imgs, X)
+        batch_loss = chamfer_loss_batch(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
 
+        # back prop
         if is_train:
             optimizer_encoder.zero_grad()
             optimizer_decoder.zero_grad()

@@ -9,6 +9,10 @@ def chamfer_loss(x,y):
     loss = torch.sum(in_dist_out.values + out_dist_in.values) / nparts
     return loss
 
+def chamfer_loss_batch(x, y):
+    loss = torch.tensor([chamfer_loss(x[i], y[i]) for i in range(len(x))])
+    return loss
+
 # Reconstruction + KL divergence losses
 def vae_loss(x, y, mu, logvar):
     BCE = chamfer_loss(x,y)
