@@ -29,7 +29,7 @@ class ChamferLoss(nn.Module):
 
     def pairwise_distance(self, x, y):
         assert (x.shape[0] == y.shape[0]), f"The batch size of x and y are not equals! x.shape[0] is {x.shape[0]}, whereas y.shape[0] is {y.shape[0]}!"
-        assert (x.shape[-1] == y.shape[-1]), f"Feature dimesion of x and y are not equals! x.shape[-1] is {x.shape[-1]}, whereas y.shape[-1] is {y.shape[-1]}!"
+        assert (x.shape[-1] == y.shape[-1]), f"Feature dimension of x and y are not equals! x.shape[-1] is {x.shape[-1]}, whereas y.shape[-1] is {y.shape[-1]}!"
 
         batch_size = x.shape[0]
         num_row = x.shape[1]
