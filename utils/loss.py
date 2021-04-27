@@ -27,18 +27,18 @@ class ChamferLoss(nn.Module):
 
         return loss
 
-    def pairwise_distance(self, x, y):
-        assert (x.shape[0] == y.shape[0]), f"The batch size of x and y are not equal! x.shape[0] is {x.shape[0]}, whereas y.shape[0] is {y.shape[0]}!"
-        assert (x.shape[-1] == y.shape[-1]), f"Feature dimension of x and y are not equal! x.shape[-1] is {x.shape[-1]}, whereas y.shape[-1] is {y.shape[-1]}!"
+def pairwise_distance(self, x, y):
+    assert (x.shape[0] == y.shape[0]), f"The batch size of x and y are not equal! x.shape[0] is {x.shape[0]}, whereas y.shape[0] is {y.shape[0]}!"
+    assert (x.shape[-1] == y.shape[-1]), f"Feature dimension of x and y are not equal! x.shape[-1] is {x.shape[-1]}, whereas y.shape[-1] is {y.shape[-1]}!"
 
-        batch_size = x.shape[0]
-        num_row = x.shape[1]
-        num_col = y.shape[1]
-        vec_dim = x.shape[-1]
+    batch_size = x.shape[0]
+    num_row = x.shape[1]
+    num_col = y.shape[1]
+    vec_dim = x.shape[-1]
 
-        x1 = x.repeat(1, 1, num_col).view(batch_size, -1, num_col, vec_dim).to(self.device)
-        y1 = y.repeat(1, num_row, 1).view(batch_size, num_row, -1, vec_dim).to(self.device)
+    x1 = x.repeat(1, 1, num_col).view(batch_size, -1, num_col, vec_dim).to(self.device)
+    y1 = y.repeat(1, num_row, 1).view(batch_size, num_row, -1, vec_dim).to(self.device)
 
-        dist = torch.norm(x1 - y1 + 1e-12, dim=-1)
+    dist = torch.norm(x1 - y1 + 1e-12, dim=-1)
 
-        return dist
+    return dist
