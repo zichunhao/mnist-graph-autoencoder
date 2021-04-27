@@ -42,7 +42,7 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
             labels.append(Y.cpu())
             gen_imgs.append(batch_gen_imgs.cpu())
         # Save only the last batch
-        else:
+        elif args.save_figs:
             if (i == len(loader) - 1):
                 labels.append(Y.cpu())
                 gen_imgs.append(batch_gen_imgs.cpu())
