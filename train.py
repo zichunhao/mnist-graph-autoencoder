@@ -19,7 +19,7 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
 
     for i, batch in enumerate(loader, 0):
         X, Y = batch[0].to(device), batch[1]
-        batch_gen_imgs = decoder(encoder(X))
+        batch_gen_imgs = decoder(encoder(X), args)
 
         batch_loss = chamfer_loss_batch(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
