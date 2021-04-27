@@ -44,7 +44,7 @@ def setup_argparse():
                         help='The directory to save trained models and figures.')
     parser.add_argument('--save-figs', type=strToBool, default=True, metavar='',
                         help='Whether to save generated figures.')
-    parser.add_argument('--save-Allfigs', type=strToBool, default=True, metavar='',
+    parser.add_argument('--save-allFigs', type=strToBool, default=True, metavar='',
                         help='Whether to save generated figures from ALL batches.')
     parser.add_argument('--load-toTrain', type=strToBool, default=False, metavar='',
                         help='Whether to load existing (trained) model for training.')
