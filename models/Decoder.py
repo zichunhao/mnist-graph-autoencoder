@@ -29,8 +29,7 @@ class Decoder(nn.Module):
                                 intensity=self.intensity, batch_norm=batch_norm, device=self.device).to(self.device)
 
     def forward(self, x):
-        batch_size = x.shape[0]
-        x = self.linear(x).view(batch_size, self.num_nodes, self.latent_node_size)
+        x = self.linear(x).view(self.num_nodes, self.latent_node_size)
         x = self.decoder(x)
         x = torch.tanh(x)
         return x
