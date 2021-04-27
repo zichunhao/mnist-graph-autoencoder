@@ -2,11 +2,13 @@ import torch
 import torch.nn as nn
 import time
 
-from utils.utils import make_dir, generate_img_tensor, save_img, save_gen_imgs, save_data, plot_eval_results
+from utils.utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data, plot_eval_results
 from utils.loss import chamfer_loss
 
 def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder, outpath, is_train, device):
     epoch_total_loss = 0
+    labels = []
+    gen_imgs = []
 
     if is_train:
         encoder.train()
@@ -17,9 +19,9 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
 
     for i, batch in enumerate(loader, 0):
         X, Y = batch[0].to(device), batch[1]
-        gen_imgs = generate_img_tensor(decoder(encoder(X), args))
+        batch_gen_imgs = decoder(encoder(X))
 
-        batch_loss = chamfer_loss(gen_imgs, generate_img_tensor(X))
+        batch_loss = chamfer_loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
 
         if is_train:
@@ -32,11 +34,15 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
         else:
             print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, valid_loss={batch_loss.item()}", end='\r', flush=True)
 
-    # Last batches
-    labels = Y.cpu()
-
-    for i in range(len(gen_imgs)):
-        save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
+        # Save all generated images
+        if args.save_figs and args.save_allFigs:
+            labels.append(Y.cpu())
+            gen_imgs.append(batch_gen_imgs.cpu())
+        # Save only the last batch
+        else:
+            if (i == len(loader) - 1):
+                labels.append(Y.cpu())
+                gen_imgs.append(batch_gen_imgs.cpu())
 
     # Save model
     if is_train:
@@ -49,14 +55,17 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
     epoch_avg_loss = epoch_total_loss / len(loader)
     save_data(epoch_avg_loss, "loss", epoch, is_train, outpath)
 
-    return epoch_avg_loss
+    for i in range(len(gen_imgs)):
+        save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
+
+    return epoch_avg_loss, gen_imgs
 
 @torch.no_grad()
 def test(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder, outpath, device):
     with torch.no_grad():
-        epoch_avg_loss = train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder,
-                               outpath, is_train=False, device=device)
-    return epoch_avg_loss
+        epoch_avg_loss, gen_imgs = train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_decoder,
+                                         outpath, is_train=False, device=device)
+    return epoch_avg_loss, gen_imgs
 
 def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_encoder, optimizer_decoder, outpath, device=None):
     if device is None:
@@ -78,8 +87,8 @@ def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_enc
 
         # Training
         start = time.time()
-        train_avg_loss = train(args, encoder, decoder, train_loader, epoch,
-                               optimizer_encoder, optimizer_decoder, outpath, is_train=True, device=device)
+        train_avg_loss, train_gen_imgs = train(args, encoder, decoder, train_loader, epoch,
+                                               optimizer_encoder, optimizer_decoder, outpath, is_train=True, device=device)
         train_dt = time.time() - start
 
         train_avg_losses.append(train_avg_loss.cpu())
@@ -90,8 +99,8 @@ def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_enc
 
         # Validation
         start = time.time()
-        valid_avg_loss = test(args, encoder, decoder, valid_loader, epoch,
-                              optimizer_encoder, optimizer_decoder, outpath, device)
+        valid_avg_loss, valid_gen_imgs = test(args, encoder, decoder, valid_loader, epoch,
+                                              optimizer_encoder, optimizer_decoder, outpath, device=device)
         valid_dt = time.time() - start
 
         valid_avg_losses.append(train_avg_loss.cpu())
