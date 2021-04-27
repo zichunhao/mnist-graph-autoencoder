@@ -20,16 +20,16 @@ class ChamferLoss(nn.Module):
     def forward(self, x, y):
         dist = pairwise_distance(x, y)
 
-        min_xy = torch.min(dist, dim=-1)
-        min_yx = torch.min(dist, dim=-2)
+        min_dist_xy = torch.min(dist, dim=-1)
+        min_dist_yx = torch.min(dist, dim=-2)  # Equivalent to permute the last two axis
 
-        loss = torch.sum(in_dist_out.values + out_dist_in.values)
+        loss = torch.sum(min_dist_xy.values + min_dist_yx.values)
 
         return loss
 
     def pairwise_distance(self, x, y):
         assert (x.shape[0] == y.shape[0]), f"The batch size of x and y are not equals! x.shape[0] is {x.shape[0]}, whereas y.shape[0] is {y.shape[0]}!"
-        assert (x.shape[-1] == y.shape[-1]), f"Feature dimesion of x and y are not equals! x.shape[-1] is {x.shape[-1]}, whereas y.shape[-1] is {y.shape{-1}}!"
+        assert (x.shape[-1] == y.shape[-1]), f"Feature dimesion of x and y are not equals! x.shape[-1] is {x.shape[-1]}, whereas y.shape[-1] is {y.shape[-1]}!"
 
         batch_size = x.shape[0]
         num_row = x.shape[1]
