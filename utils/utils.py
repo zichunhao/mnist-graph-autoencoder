@@ -22,7 +22,7 @@ def generate_img_tensor(graph_output, img_dim=28):
         for pts in output[i]:
             x,y,I = pts
             x,y = int(x),int(y)
-            img_tensor[y,x] = img_tensor[y,x] + I
+            img_tensor[i, y,x] = img_tensor[i, y,x] + I
         img_tensor[i, :, :] = (torch.tanh(img_tensor[i, :, :]) + 1) * 127.5
     return img_tensor
 
