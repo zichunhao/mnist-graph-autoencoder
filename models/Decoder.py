@@ -21,15 +21,15 @@ class Decoder(nn.Module):
         self.device = device
 
         # layers
-        self.linear = nn.Linear(self.latent_node_size, self.num_nodes*self.latent_node_size).to(self.device)
+        self.linear = nn.Linear(self.num_latent_node*self.latent_node_size, self.num_nodes*self.latent_node_size).to(self.device)
 
         self.decoder = GraphNet(num_nodes=self.num_nodes, input_node_size=self.latent_node_size, output_node_size=self.node_size,
                                 num_hidden_node_layers=num_hidden_node_layers, hidden_edge_size=hidden_edge_size,
                                 output_edge_size=output_edge_size, num_mps=num_mps, dropout=dropout, alpha=alpha,
                                 intensity=self.intensity, batch_norm=batch_norm, device=self.device).to(self.device)
 
-    def forward(self, x):
-        x = self.linear(x).view(self.num_nodes, self.latent_node_size)
+    def forward(self, x, args):
+        x = self.linear(x).view(args.batch_size, self.num_nodes, self.latent_node_size)
         x = self.decoder(x)
         x = torch.tanh(x)
         return x

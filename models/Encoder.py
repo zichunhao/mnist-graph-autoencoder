@@ -28,5 +28,5 @@ class Encoder(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        latent_vec = torch.sum(x, dim=-2).unsqueeze(dim=0)  # Latent vector
-        return latent_vec
+        x = torch.sum(x, dim=-2).unsqueeze(dim=0)  # Latent vector
+        return x
