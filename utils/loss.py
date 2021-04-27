@@ -1,7 +1,7 @@
 # from Steven Tsan https://github.com/stsan9/AnomalyDetection4Jets/blob/emd/code/loss_util.py#L3
 import torch
 
-def chamfer_loss(x,y):
+def chamfer_loss(x, y):
     nparts = x.shape[0]
     dist = torch.pow(torch.cdist(x,y),2)
     in_dist_out = torch.min(dist,dim=0)
@@ -10,9 +10,10 @@ def chamfer_loss(x,y):
     return loss
 
 def chamfer_loss_batch(x, y):
-    loss = torch.tensor([chamfer_loss(x[i], y[i]) for i in range(len(x))])
-    return loss
+    batch_loss = torch.tensor([chamfer_loss(x[i], y[i]) for i in range(len(x))])
+    return batch_loss
 
+'''Unused in this project'''
 # Reconstruction + KL divergence losses
 def vae_loss(x, y, mu, logvar):
     BCE = chamfer_loss(x,y)
