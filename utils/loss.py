@@ -7,6 +7,7 @@ def chamfer_loss(x, y):
     in_dist_out = torch.min(dist,dim=0)
     out_dist_in = torch.min(dist,dim=1)
     loss = torch.sum(in_dist_out.values + out_dist_in.values) / nparts
+    loss.requres_grad = True
     return loss
 
 def chamfer_loss_batch(x, y):
