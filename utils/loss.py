@@ -3,8 +3,8 @@ import torch
 import torch.nn as nn
 
 class ChamferLoss(nn.Module):
-    def __init__(self):
-        super(ChamferLoss, self).__init__(device)
+    def __init__(self, device):
+        super(ChamferLoss, self).__init__()
 
         self.device = device
 
