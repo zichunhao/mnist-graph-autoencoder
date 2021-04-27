@@ -8,21 +8,13 @@ class ChamferLoss(nn.Module):
 
         self.device = device
 
-    # # Adapted from Steven Tsan https://github.com/stsan9/AnomalyDetection4Jets/blob/emd/code/loss_util.py#L3
-    # def forward(self, x, y):
-    #     num_pts = x.shape[0]
-    #     dist = torch.pow(torch.cdist(x,y),2) + 1e-6
-    #     in_dist_out = torch.min(dist, dim=1)
-    #     out_dist_in = torch.min(dist, dim=2)
-    #     loss = torch.sum(in_dist_out.values + out_dist_in.values) / num_pts
-    #     return loss
-
     def forward(self, x, y):
         dist = pairwise_distance(x, y)
 
         min_dist_xy = torch.min(dist, dim=-1)
         min_dist_yx = torch.min(dist, dim=-2)  # Equivalent to permute the last two axis
 
+        # Adapted from Steven Tsan https://github.com/stsan9/AnomalyDetection4Jets/blob/emd/code/loss_util.py#L3
         loss = torch.sum(min_dist_xy.values + min_dist_yx.values)
 
         return loss
