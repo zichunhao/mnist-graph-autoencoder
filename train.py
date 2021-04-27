@@ -26,7 +26,8 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
         batch_loss = loss(batch_gen_imgs, X)
         epoch_total_loss += batch_loss
 
-        if torch.any(batch_loss.isnan()):
+        # True if batch_loss has at least one NaN value
+        if (batch_loss != batch_loss).any():
             raise RuntimeError('Batch loss is NaN!')
 
         # back prop
