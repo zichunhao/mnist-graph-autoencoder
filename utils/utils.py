@@ -15,7 +15,7 @@ def generate_img_tensor(graph_output, img_dim=28):
     batch_size = len(graph_output)
     output = torch.clone(graph_output)
     # Denormalization
-    output[:, :, :2]  = (output[:, :, :2] + 1) / 2 * img_dim - 1e-6
+    output[:, :, :2]  = (output[:, :, :2] + 1) / 2 * img_dim - 1e-5
 
     img_tensor = torch.zeros((batch_size, img_dim, img_dim))
     for i in range(batch_size):
