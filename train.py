@@ -37,9 +37,9 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
             batch_loss.backward()
             optimizer_encoder.step()
             optimizer_decoder.step()
-            print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, train_loss={batch_loss.item()}", end='\r', flush=True)
-        else:
-            print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, valid_loss={batch_loss.item()}", end='\r', flush=True)
+        #     print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, train_loss={batch_loss.item()}", end='\r', flush=True)
+        # else:
+        #     print(f"epoch {epoch+1}, batch {i+1}/{len(loader)}, valid_loss={batch_loss.item()}", end='\r', flush=True)
 
         # Save all generated images
         if args.save_figs and args.save_allFigs:
@@ -116,7 +116,7 @@ def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_enc
         save_data(data=valid_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=False)
         save_data(data=valid_dt, data_name="dt", epoch=epoch, outpath=outpath, is_train=False)
 
-        print(f'epoch={epoch+1}/{args.num_epochs if not args.load_toTrain else args.num_epochs+args.load_epoch} '
+        print(f'epoch={epoch+1}/{args.num_epochs if not args.load_toTrain else args.num_epochs+args.load_epoch}, '
               + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
 
         if (epoch > 0) and ((epoch + 1) % 10 == 0):
