@@ -9,7 +9,8 @@ class MNISTGraphDataset(Dataset):
         else:
             dataset = np.loadtxt(dataset_path + 'mnist_test.csv', delimiter=',', dtype=np.float32)
 
-        print("MNIST CSV Loaded")
+        name = "Training" if train else "Validation"
+        print(f"{name} MNIST CSV Loaded")
 
         if isinstance(num, list):
             map1 = list(map(lambda x: x in num, dataset[:, 0]))
@@ -17,7 +18,7 @@ class MNISTGraphDataset(Dataset):
         elif num > -1:
             dataset = dataset[dataset[:, 0] == num]
 
-        print(dataset.shape)
+        print(f'Original data shape {dataset.shape}')
 
         X_pre = (dataset[:, 1:] - 127.5) / 255.0
 
@@ -49,7 +50,7 @@ class MNISTGraphDataset(Dataset):
             y.append(one_hot)
         self.Y = torch.tensor(y).to(torch.float32)
 
-        print(self.X.shape)
+        print(f'Transformed to {self.X.shape}')
         print("Data Processed")
 
     def __len__(self):
