@@ -119,7 +119,7 @@ def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_enc
         print(f'epoch={epoch+1}/{args.num_epochs if not args.load_toTrain else args.num_epochs+args.load_epoch} '
               + f'train_loss={train_avg_loss}, valid_loss={valid_avg_loss}, dt={train_dt+valid_dt}')
 
-        if (epoch + 1 % 10 == 0):
+        if ((epoch + 1) % 10 == 0):
             plot_eval_results(args, epoch, "losses", outpath)
 
     # Save global data

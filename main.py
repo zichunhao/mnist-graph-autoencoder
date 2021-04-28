@@ -55,7 +55,7 @@ if __name__ == "__main__":
     print(f'Training over {args.num_epochs} epochs...')
 
     '''Training'''
-    # Toad existing model
+    # Load existing model
     if args.load_toTrain:
         assert (args.load_epoch is not None), 'Which epoch weights to load is not specified!'
         outpath = args.load_modelPath
