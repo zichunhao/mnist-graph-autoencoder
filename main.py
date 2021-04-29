@@ -60,11 +60,11 @@ if __name__ == "__main__":
         assert (args.load_epoch is not None), 'Which epoch weights to load is not specified!'
         outpath = args.load_modelPath
         if torch.cuda.is_available():
-            encoder.load_state_dict(torch.load(f'{outpath}/encoder_weights/epoch_{args.load_epoch}_encoder_weights.pth'))
-            decoder.load_state_dict(torch.load(f'{outpath}/decoder_weights/epoch_{args.load_epoch}_decoder_weights.pth'))
+            encoder.load_state_dict(torch.load(f'{outpath}/weights_encoder/epoch_{args.load_epoch}_encoder_weights.pth'))
+            decoder.load_state_dict(torch.load(f'{outpath}/weights_decoder/epoch_{args.load_epoch}_decoder_weights.pth'))
         else:
-            encoder.load_state_dict(torch.load(f'{outpath}/encoder_weights/epoch_{args.load_epoch}_encoder_weights.pth', map_location=torch.device('cpu')))
-            encoder.load_state_dict(torch.load(f'{outpath}/decoder_weights/epoch_{args.load_epoch}_decoder_weights.pth', map_location=torch.device('cpu')))
+            encoder.load_state_dict(torch.load(f'{outpath}/weights_encoder/epoch_{args.load_epoch}_encoder_weights.pth', map_location=torch.device('cpu')))
+            encoder.load_state_dict(torch.load(f'{outpath}/weights_decoder/epoch_{args.load_epoch}_decoder_weights.pth', map_location=torch.device('cpu')))
     # Create new model
     else:
         outpath = f"{args.save_dir}/{gen_fname(args)}"
