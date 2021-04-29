@@ -122,11 +122,11 @@ def plot_eval_results(args, data, data_name, outpath):
     x = [i for i in range(start, end+1)]
 
     if type(data) in [tuple, list] and len(data) == 2:
-        train, valid = data.cpu()
+        train, valid = data[0].cpu(), data[1].cpu()
         plt.plot(x, train, label='Train')
         plt.plot(x, valid, label='Valid')
     else:
-        plt.plot(x, data)
+        plt.plot(x, data.cpu())
     plt.legend()
     plt.xlabel('Epoch')
     plt.ylabel(data_name)
