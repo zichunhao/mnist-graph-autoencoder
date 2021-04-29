@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.nn.Functional as F
+import torch.nn.functional as F
 import time
 
 from utils.utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data, plot_eval_results
