@@ -53,7 +53,7 @@ class MNISTGraphDataset(Dataset):
 
         print(f"Transformed to: {self.X.shape}")
         # print(self.X[0])
-        print("Data Processed")
+        print(f"{name} data Processed")
 
     def __len__(self):
         return len(self.X)
