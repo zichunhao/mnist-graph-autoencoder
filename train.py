@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import time
 
-from utils.utils import make_dir, generate_img_arr, save_img, save_gen_imgs, save_data, plot_eval_results
+from utils.utils import make_dir, generate_img_arr, save_gen_imgs, save_data, plot_eval_results
 # from utils.loss import chamfer_loss_batch
 from utils.loss import ChamferLoss
 
@@ -15,9 +14,6 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
     if is_train:
         encoder.train()
         decoder.train()
-    else:
-        encoder.eval()
-        decoder.eval()
 
     for i, batch in enumerate(loader, 0):
         X, Y = batch[0].to(device), batch[1]
@@ -45,12 +41,12 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
         # Save all generated images
         if args.save_figs and args.save_allFigs:
             labels.append(Y.cpu())
-            gen_imgs.append(F.tanh(batch_gen_imgs).cpu())
+            gen_imgs.append(torch.tanh(batch_gen_imgs).cpu())
         # Save only the last batch
         elif args.save_figs:
             if (i == len(loader) - 1):
                 labels.append(Y.cpu())
-                gen_imgs.append(F.tanh(batch_gen_imgs).cpu())
+                gen_imgs.append(torch.tanh(batch_gen_imgs).cpu())
 
     # Save model
     if is_train:
