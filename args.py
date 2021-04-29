@@ -42,7 +42,7 @@ def setup_argparse():
                         help='Learning rate.')
     parser.add_argument('--save-dir', type=str, default='mnist_trained_models', metavar='',
                         help='The directory to save trained models and figures.')
-    parser.add_argument('--customSuffix', type=str, default='', metavar='',
+    parser.add_argument('--customSuffix', type=str, default=None, metavar='',
                         help='Custom suffix of the saving directory.')
     parser.add_argument('--save-figs', type=strToBool, default=True, metavar='',
                         help='Whether to save generated figures.')
