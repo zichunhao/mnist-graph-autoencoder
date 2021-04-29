@@ -21,7 +21,7 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
 
     for i, batch in enumerate(loader, 0):
         X, Y = batch[0].to(device), batch[1]
-        batch_gen_imgs = decoder(encoder(X), args) * 10
+        batch_gen_imgs = decoder(encoder(X), args)
 
         loss = ChamferLoss(device)
         batch_loss = loss(batch_gen_imgs, X)
