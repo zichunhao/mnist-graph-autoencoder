@@ -46,8 +46,6 @@ def save_img(img_arr, label, epoch, outpath, original=None):
         plt.savefig(f"{outpath}/comparisons/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
         plt.close()
 
-    return
-
 '''
 Save generated images.
 '''
@@ -65,8 +63,6 @@ def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, originals=None):
             save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train", original=original)
         else:
             save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid", original=original)
-
-    return
 
 
 '''
@@ -105,7 +101,6 @@ def plot_eval_results(args, data, data_name, outpath):
     plt.savefig(f"{outpath}/model_evaluations/{save_name}.png", dpi=600)
     plt.close()
 
-    return
 
 '''
 Generate folder name
@@ -144,7 +139,6 @@ def save_data(data, data_name, epoch, is_train, outpath, global_data=False, cpu=
         else:
             torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl')
 
-    return
 
 '''
 Data initialization.
