@@ -70,7 +70,7 @@ if __name__ == "__main__":
         outpath = f"{args.save_dir}/{gen_fname(args)}"
 
     if args.customSuffix is not None:
-        outpath = f"outpath_{args.customSuffix}"
+        outpath = f"{outpath}_{args.customSuffix}"
 
     make_dir(outpath)
     with open(f"{outpath}/args_cache.json", "w") as f:
