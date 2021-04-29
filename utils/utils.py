@@ -31,6 +31,7 @@ def save_img(img_arr, label, epoch, outpath):
     make_dir(outpath)
 
     plt.imshow(img_arr, cmap='gray')
+    plt.title(f"Number {label} at epoch {epoch}")
     plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{generate_id()}.png", dpi=600)
     plt.close()
 
