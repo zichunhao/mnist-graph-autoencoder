@@ -64,18 +64,20 @@ def generate_id():
 '''
 Save generated images.
 '''
-def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, original=None):
+def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, originals=None):
     make_dir(f"{outpath}/generated_images/train")
     make_dir(f"{outpath}/generated_images/valid")
     for i in range(len(gen_imgs)):
         img_arr = generate_img_arr(gen_imgs[i])
         img_label = labels[i].argmax(dim=-1).item()
-        if original is not None:
-            original_arr=generate_img_arr(original[i])
-        if is_train:
-            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train", original=original_arr)
+        if originals is not None:
+            original = generate_img_arr(originals[i])
         else:
-            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid", original=original_arr)
+            original = None
+        if is_train:
+            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train", original=original)
+        else:
+            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid", original=original)
 
 '''
 Save data like losses and dts.

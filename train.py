@@ -68,7 +68,7 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
 
     for i in range(len(gen_imgs)):
         if args.compareFigs:
-            save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath, original=original[i].cpu())
+            save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath, originals=original[i].cpu())
         else:
             save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
 
