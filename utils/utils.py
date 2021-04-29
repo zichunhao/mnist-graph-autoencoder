@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from utils.MNISTGraphDataset import MNISTGraphDataset
 
 '''
-Convert an array of coordinates [[xi, yi, Ii]] to a 2-D image array.
+Convert a torch tensor of coordinates [[xi, yi, Ii]] to a 2-D image numpy array.
 '''
 def generate_img_arr(coords, img_dim=28):
     coords = coords.detach().cpu().numpy()
@@ -46,20 +46,7 @@ def save_img(img_arr, label, epoch, outpath, original=None):
         plt.savefig(f"{outpath}/comparisons/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
         plt.close()
 
-
-
-'''
-Make new directory if it does not exist.
-'''
-def make_dir(path):
-    if not os.path.isdir(path):
-        os.makedirs(path)
-
-'''
-Generate a random hexadecimal ID for saving images.
-'''
-def generate_id():
-    return uuid.uuid4().hex
+    return
 
 '''
 Save generated images.
@@ -79,33 +66,8 @@ def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, originals=None):
         else:
             save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid", original=original)
 
-'''
-Save data like losses and dts.
-'''
-def save_data(data, data_name, epoch, is_train, outpath, global_data=False):
-    make_dir(f"{outpath}/model_evaluations/pkl_files")
-    if not global_data:
-        if is_train:
-            torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch+1}.pkl')
-        else:
-            torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch+1}.pkl')
-    else:
-        if is_train:
-            torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl')
-        else:
-            torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl')
+    return
 
-'''
-Data initialization.
-'''
-def initialize_data(args):
-    data_train = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=True)
-    data_test = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=False)
-
-    train_loader = DataLoader(data_train, batch_size=args.batch_size, shuffle=True)
-    test_loader = DataLoader(data_test, batch_size=args.batch_size, shuffle=False)
-
-    return train_loader, test_loader
 
 '''
 Plot evaluation results
@@ -122,11 +84,18 @@ def plot_eval_results(args, data, data_name, outpath):
     x = [i for i in range(start, end+1)]
 
     if type(data) in [tuple, list] and len(data) == 2:
-        train, valid = data[0].cpu(), data[1].cpu()
+        train, valid = data
+        if isinstance(train, torch.Tensor):
+            train = train.detach().cpu().numpy()
+        if isinstance(valid, torch.Tensor):
+            valid = valid.detach().cpu().numpy()
         plt.plot(x, train, label='Train')
         plt.plot(x, valid, label='Valid')
     else:
-        plt.plot(x, data.cpu())
+        if isinstance(data, torch.Tensor):
+            data = data.detach().cpu().numpy()
+        plt.plot(x)
+
     plt.legend()
     plt.xlabel('Epoch')
     plt.ylabel(data_name)
@@ -136,9 +105,55 @@ def plot_eval_results(args, data, data_name, outpath):
     plt.savefig(f"{outpath}/model_evaluations/{save_name}.png", dpi=600)
     plt.close()
 
+    return
 
 '''
 Generate folder name
 '''
 def gen_fname(args):
     return f"MnistAutoencoder_lr_{args.lr}_numEpochs_{args.num_epochs}_batchSize_{args.batch_size}_latentNodeSize_{args.latentNodeSize}"
+
+'''
+Generate a random hexadecimal ID for saving images.
+'''
+def generate_id():
+    return uuid.uuid4().hex
+
+'''
+Make new directory if it does not exist.
+'''
+def make_dir(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
+'''
+Save data like losses and dts.
+'''
+def save_data(data, data_name, epoch, is_train, outpath, global_data=False, cpu=True):
+    make_dir(f"{outpath}/model_evaluations/pkl_files")
+    if cpu:
+        data = data.cpu()
+    if not global_data:
+        if is_train:
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}_epoch_{epoch+1}.pkl')
+        else:
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}_epoch_{epoch+1}.pkl')
+    else:
+        if is_train:
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/train_{data_name}.pkl')
+        else:
+            torch.save(data, f'{outpath}/model_evaluations/pkl_files/valid_{data_name}.pkl')
+
+    return
+
+'''
+Data initialization.
+'''
+def initialize_data(args):
+    data_train = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=True)
+    data_test = MNISTGraphDataset(dataset_path=args.file_path, num_pts=args.num_nodes, train=False)
+
+    train_loader = DataLoader(data_train, batch_size=args.batch_size, shuffle=True)
+    test_loader = DataLoader(data_test, batch_size=args.batch_size, shuffle=False)
+
+    return train_loader, test_loader
