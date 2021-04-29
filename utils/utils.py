@@ -27,13 +27,26 @@ def generate_img_arr(coords, img_dim=28):
 '''
 Save generated image from an array in terms of coordinates.
 '''
-def save_img(img_arr, label, epoch, outpath):
+def save_img(img_arr, label, epoch, outpath, original=None):
     make_dir(outpath)
+    rand_id = generate_id()
 
     plt.imshow(img_arr, cmap='gray')
     plt.title(f"Number {label} at epoch {epoch}")
-    plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{generate_id()}.png", dpi=600)
+    plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
     plt.close()
+    if original is not None:
+        make_dir(f"{outpath}/comparisons")
+        fig, axes = plt.subplots(nrows=1, ncols=2)
+        axes[0].imshow(original, cmap='gray')
+        axes[0].set_title('original')
+        axes[1].imshow(img_arr, cmap='gray')
+        axes[1].set_title('generated')
+        fig.suptitle(f"Number {label} at epoch {epoch}")
+        plt.savefig(f"{outpath}/comparisons/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
+        plt.close()
+
+
 
 '''
 Make new directory if it does not exist.
@@ -51,16 +64,18 @@ def generate_id():
 '''
 Save generated images.
 '''
-def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath):
+def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, original=None):
     make_dir(f"{outpath}/generated_images/train")
     make_dir(f"{outpath}/generated_images/valid")
     for i in range(len(gen_imgs)):
         img_arr = generate_img_arr(gen_imgs[i])
         img_label = labels[i].argmax(dim=-1).item()
+        if original is not None:
+            original_arr=generate_img_arr(original[i])
         if is_train:
-            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train")
+            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/train", original=original_arr)
         else:
-            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid")
+            save_img(img_arr, label=img_label, epoch=epoch, outpath=f"{outpath}/generated_images/valid", original=original_arr)
 
 '''
 Save data like losses and dts.

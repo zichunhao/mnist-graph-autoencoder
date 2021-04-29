@@ -10,6 +10,8 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
     epoch_total_loss = 0
     labels = []
     gen_imgs = []
+    if args.compareFigs:
+        original = []
 
     if is_train:
         encoder.train()
@@ -42,11 +44,16 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
         if args.save_figs and args.save_allFigs:
             labels.append(Y.cpu())
             gen_imgs.append(torch.tanh(batch_gen_imgs).cpu())
+            if args.compareFigs:
+                original.append(X.cpu())
+
         # Save only the last batch
         elif args.save_figs:
             if (i == len(loader) - 1):
                 labels.append(Y.cpu())
                 gen_imgs.append(torch.tanh(batch_gen_imgs).cpu())
+                if args.compareFigs:
+                    original.append(X.cpu())
 
     # Save model
     if is_train:
@@ -60,7 +67,10 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
     save_data(epoch_avg_loss, "loss", epoch, is_train, outpath)
 
     for i in range(len(gen_imgs)):
-        save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
+        if args.compareFigs:
+            save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath, original=original[i].cpu())
+        else:
+            save_gen_imgs(gen_imgs[i], labels[i], epoch, is_train, outpath)
 
     return epoch_avg_loss, gen_imgs
 
