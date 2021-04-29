@@ -126,7 +126,7 @@ Save data like losses and dts.
 '''
 def save_data(data, data_name, epoch, is_train, outpath, global_data=False, cpu=True):
     make_dir(f"{outpath}/model_evaluations/pkl_files")
-    if cpu:
+    if cpu and isinstance(data, torch.Tensor):
         data = data.cpu()
     if not global_data:
         if is_train:
