@@ -31,5 +31,4 @@ class Decoder(nn.Module):
     def forward(self, x, args):
         x = self.linear(x).view(args.batch_size, self.num_nodes, self.latent_node_size)
         x = self.decoder(x)
-        x = torch.tanh(x)
         return x

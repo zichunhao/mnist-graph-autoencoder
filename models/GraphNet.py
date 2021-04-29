@@ -148,7 +148,7 @@ class GraphNet(nn.Module):
                     x = self.bn_node[i][j](x)
                 x = self.dropout(x)
 
-            x = self.dropout(torch.tanh(self.update[i](x)))
+            x = self.dropout(self.update[i](x))
             x = x.view(batch_size, self.num_nodes, self.hidden_node_size)
 
         return x
