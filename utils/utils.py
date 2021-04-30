@@ -56,7 +56,7 @@ def save_img(img_arr, label, epoch, outpath, original=None):
         axes[1].set_aspect('equal', adjustable='box')
         axes[1].set_title('generated')
         fig.suptitle(f"Number {label} at epoch {epoch+1}")
-        plt.savefig(f"{outpath}/comparisons/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600, transparent=True)
+        plt.savefig(f"{outpath}/comparisons/epoch_{epoch+1}_num_{label}_{rand_id}.pdf")
         plt.close()
 
 '''
