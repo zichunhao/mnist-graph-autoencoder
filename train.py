@@ -105,7 +105,7 @@ def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_enc
                                                optimizer_encoder, optimizer_decoder, outpath, is_train=True, device=device)
         train_dt = time.time() - start
 
-        train_avg_losses.append(train_avg_loss.cpu())
+        train_avg_losses.append(train_avg_loss)
         train_dts.append(train_dt)
 
         save_data(data=train_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=True)
@@ -117,7 +117,7 @@ def train_loop(args, encoder, decoder, train_loader, valid_loader, optimizer_enc
                                               optimizer_encoder, optimizer_decoder, outpath, device=device)
         valid_dt = time.time() - start
 
-        valid_avg_losses.append(train_avg_loss.cpu())
+        valid_avg_losses.append(train_avg_loss)
         valid_dts.append(valid_dt)
 
         save_data(data=valid_avg_loss, data_name="loss", epoch=epoch, outpath=outpath, is_train=False)
