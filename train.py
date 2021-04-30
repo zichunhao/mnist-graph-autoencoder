@@ -23,7 +23,7 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
 
         loss = ChamferLoss(device)
         batch_loss = loss(batch_gen_imgs, X)
-        epoch_total_loss += batch_loss
+        epoch_total_loss += batch_loss.item()
 
         # True if batch_loss has at least one NaN value
         if (batch_loss != batch_loss).any():

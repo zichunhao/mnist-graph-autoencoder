@@ -86,7 +86,7 @@ def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, originals=None):
 '''
 Plot evaluation results
 '''
-def plot_eval_results(args, data, data_name, outpath):
+def plot_eval_results(args, data, data_name, outpath, global_data=True):
     make_dir(f"{outpath}/model_evaluations")
     if args.load_toTrain:
         start = args.load_epoch + 1
@@ -95,20 +95,29 @@ def plot_eval_results(args, data, data_name, outpath):
         start = 1
         end = args.num_epochs
 
-    x = [i for i in range(start, end+1)]
-
+    # (train, label)
     if type(data) in [tuple, list] and len(data) == 2:
         train, valid = data
+        if global_data:
+            x = [i for i in range(start, end+1)]
+        else:
+            x = [start + i for i in range(len(train))]
+
         if isinstance(train, torch.Tensor):
             train = train.detach().cpu().numpy()
         if isinstance(valid, torch.Tensor):
             valid = valid.detach().cpu().numpy()
         plt.plot(x, train, label='Train')
         plt.plot(x, valid, label='Valid')
+    # only one type of data (e.g. dt)
     else:
+        if global_data:
+            x = [i for i in range(start, end+1)]
+        else:
+            x = [start + i for i in range(len(train))]
         if isinstance(data, torch.Tensor):
             data = data.detach().cpu().numpy()
-        plt.plot(x)
+        plt.plot(x, data)
 
     plt.legend()
     plt.xlabel('Epoch')
