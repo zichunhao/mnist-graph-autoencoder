@@ -8,39 +8,46 @@ from torch.utils.data import DataLoader
 from utils.MNISTGraphDataset import MNISTGraphDataset
 
 '''
-Convert a torch tensor of coordinates [[xi, yi, Ii]] to a 2-D image numpy array.
-'''
-def generate_img_arr(coords, img_dim=28):
-    coords = coords.detach().cpu().numpy()
-    coords = np.array(coords, copy=True)
-    # Denormalization
-    coords[:, :2]  = (coords[:, :2] + 1) / 2 * img_dim - 1e-5  # x,y
-    coords[:, -1] = (coords[:, -1] + 1) * 127.5  # Intesity
-
-    img_arr = np.zeros((img_dim, img_dim))
-    for pts in coords:
-        x,y,I = pts
-        x,y = int(x), int(y)
-        img_arr[y,x] = max(img_arr[y,x] + I, 255)  # row = y, col = x
-    return img_arr
-
-'''
 Save generated image from an array in terms of coordinates.
 '''
 def save_img(img_arr, label, epoch, outpath, original=None):
     make_dir(outpath)
     rand_id = generate_id()
 
-    plt.imshow(img_arr, cmap='gray')
-    plt.title(f"Number {label} at epoch {epoch}")
+    # Generated image alone
+    xGen = img_arr[:,0].reshape(-1)
+    yGen = -1 * img_arr[:,1].reshape(-1)
+    IGen = img_arr[:,2].reshape(-1)
+    fig, ax = plt.subplots(1)
+    ax.scatter(xGen, yGen, c=IGen, s=IGen*50)
+    ax.set_xlim((-1,1))
+    ax.set_ylim((-1,1))
+    ax.set_facecolor('black')
+    ax.set_aspect('equal', adjustable='box')
+    plt.gray()
+    plt.title(f"Number {label} at epoch {epoch + 1}")
     plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
     plt.close()
+
+    # Generated image vs original image
     if original is not None:
+        xOriginal = original[:,0].reshape(-1)
+        yOriginal = -1 * original[:,1].reshape(-1)
+        IOriginal = original[:,2].reshape(-1)
+
         make_dir(f"{outpath}/comparisons")
         fig, axes = plt.subplots(nrows=1, ncols=2)
-        axes[0].imshow(original, cmap='gray')
+        axes[0].scatter(xGen, yGen, c=IGen, s=IGen*50)
+        axes[0].set_xlim((-1,1))
+        axes[0].set_ylim((-1,1))
+        axes[0].set_facecolor('black')
+        axes[0].set_aspect('equal', adjustable='box')
         axes[0].set_title('original')
-        axes[1].imshow(img_arr, cmap='gray')
+        axes[1].scatter(xOriginal, yOriginal, c=IOriginal, s=IOriginal*50)
+        axes[1].set_xlim((-1,1))
+        axes[1].set_ylim((-1,1))
+        axes[1].set_facecolor('black')
+        axes[1].set_aspect('equal', adjustable='box')
         axes[1].set_title('generated')
         fig.suptitle(f"Number {label} at epoch {epoch+1}")
         plt.savefig(f"{outpath}/comparisons/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
@@ -53,10 +60,21 @@ def save_gen_imgs(gen_imgs, labels, epoch, is_train, outpath, originals=None):
     make_dir(f"{outpath}/generated_images/train")
     make_dir(f"{outpath}/generated_images/valid")
     for i in range(len(gen_imgs)):
-        img_arr = generate_img_arr(gen_imgs[i])
+        # Generated images
+        if isinstance(gen_imgs[0], torch.Tensor):
+            img_arr = gen_imgs[i].detach().cpu().numpy()
+        else:
+            img_arr = gen_imgs[i]
+
+        # Labels (0-9)
         img_label = labels[i].argmax(dim=-1).item()
+
+        # Original images
         if originals is not None:
-            original = generate_img_arr(originals[i])
+            if isinstance(originals[0], torch.Tensor):
+                original = originals[i].detach().cpu().numpy()
+            else:
+                original = originals[i]
         else:
             original = None
         if is_train:
@@ -151,3 +169,20 @@ def initialize_data(args):
     test_loader = DataLoader(data_test, batch_size=args.batch_size, shuffle=False)
 
     return train_loader, test_loader
+
+'''
+DEPRECATED: Convert a torch tensor of coordinates [[xi, yi, Ii]] to a 2-D image numpy array.
+'''
+def generate_img_arr(coords, img_dim=28):
+    coords = coords.detach().cpu().numpy()
+    coords = np.array(coords, copy=True)
+    # Denormalization
+    coords[:, :2]  = (coords[:, :2] + 1) / 2 * img_dim - 1e-5  # x,y
+    coords[:, -1] = (coords[:, -1] + 1) * 127.5  # Intesity
+
+    img_arr = np.zeros((img_dim, img_dim))
+    for pts in coords:
+        x,y,I = pts
+        x,y = int(x), int(y)
+        img_arr[y,x] = max(img_arr[y,x] + I, 255)  # row = y, col = x
+    return img_arr
