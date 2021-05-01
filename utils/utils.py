@@ -28,7 +28,7 @@ def save_img(img_arr, label, epoch, outpath, original=None):
     ax.set_yticks(np.arange(-1, 1.1, 0.5))
     plt.gray()
     plt.title(f"Number {label} at epoch {epoch + 1}")
-    plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{rand_id}.png", dpi=600)
+    plt.savefig(f"{outpath}/epoch_{epoch+1}_num_{label}_{rand_id}.pdf")
     plt.close()
 
     # Generated image vs original image
