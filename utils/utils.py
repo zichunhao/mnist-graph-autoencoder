@@ -19,7 +19,7 @@ def save_img(img_arr, label, epoch, outpath, original=None):
     yGen = -1 * img_arr[:,1].reshape(-1)
     IGen = (img_arr[:,2].reshape(-1) + 1) / 2  # [-1, 1] -> [0, 1]
     fig, ax = plt.subplots(1)
-    ax.scatter(xGen, yGen, c=IGen, vmin=0, vmax=1, s=IGen*30)
+    ax.scatter(xGen, yGen, c=IGen, vmin=0, vmax=1, s=IGen*50)
     ax.set_xlim((-1,1))
     ax.set_ylim((-1,1))
     ax.set_facecolor('black')
