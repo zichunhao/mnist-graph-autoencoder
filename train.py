@@ -16,6 +16,9 @@ def train(args, encoder, decoder, loader, epoch, optimizer_encoder, optimizer_de
     if is_train:
         encoder.train()
         decoder.train()
+    else:
+        encoder.eval()
+        decoder.eval()
 
     for i, batch in enumerate(loader, 0):
         X, Y = batch[0].to(device), batch[1]

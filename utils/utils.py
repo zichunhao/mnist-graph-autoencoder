@@ -115,6 +115,7 @@ def plot_eval_results(args, data, data_name, outpath, global_data=True):
             valid = valid.detach().cpu().numpy()
         plt.plot(x, train, label='Train')
         plt.plot(x, valid, label='Valid')
+        plt.legend()
     # only one type of data (e.g. dt)
     else:
         if global_data:
@@ -125,7 +126,6 @@ def plot_eval_results(args, data, data_name, outpath, global_data=True):
             data = data.detach().cpu().numpy()
         plt.plot(x, data)
 
-    plt.legend()
     plt.xlabel('Epoch')
     plt.ylabel(data_name)
     plt.title(data_name)

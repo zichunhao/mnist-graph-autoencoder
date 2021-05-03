@@ -86,3 +86,5 @@ if __name__ == "__main__":
     plot_eval_results(args, data=(train_avg_losses, valid_avg_losses), data_name="Losses", outpath=outpath)
     plot_eval_results(args, data=(train_dts, valid_dts), data_name="Time durations", outpath=outpath)
     plot_eval_results(args, data=[train_dts[i] + valid_dts[i] for i in range(len(train_dts))], data_name="Total time durations per epoch", outpath=outpath)
+
+    print("Completed!")
