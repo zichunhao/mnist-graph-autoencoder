@@ -35,11 +35,11 @@ def save_img(img_arr, label, epoch, outpath, original=None):
     if original is not None:
         xOriginal = original[:,0].reshape(-1)
         yOriginal = -1 * original[:,1].reshape(-1)
-        IOriginal = original[:,2].reshape(-1)
+        IOriginal = (original[:,2].reshape(-1) + 1) / 2  # [-1, 1] -> [0, 1]
 
         make_dir(f"{outpath}/comparisons")
         fig, axes = plt.subplots(nrows=1, ncols=2)
-        axes[0].scatter(xOriginal, yOriginal, c=IOriginal, vmin=-1, vmax=1, s=IOriginal*50)
+        axes[0].scatter(xOriginal, yOriginal, c=IOriginal, vmin=0, vmax=1, s=IOriginal*50)
         axes[0].set_xlim((-1,1))
         axes[0].set_ylim((-1,1))
         axes[0].set_facecolor('black')
@@ -47,7 +47,7 @@ def save_img(img_arr, label, epoch, outpath, original=None):
         axes[0].set_yticks(np.arange(-1, 1.1, 0.5))
         axes[0].set_aspect('equal', adjustable='box')
         axes[0].set_title('original')
-        axes[1].scatter(xGen, yGen, c=IGen, vmin=-1, vmax=1, s=IGen*30)
+        axes[1].scatter(xGen, yGen, c=IGen, vmin=0, vmax=1, s=IGen*30)
         axes[1].set_xlim((-1,1))
         axes[1].set_ylim((-1,1))
         axes[1].set_facecolor('black')
